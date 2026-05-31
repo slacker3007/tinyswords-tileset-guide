@@ -2,6 +2,12 @@
   "folder": "TinySwords/Terrain/Tileset",
   "tileSize": 64,
   "description": "Terrain tileset guide for the Tiny Swords asset pack. All terrain tiles snap to a 64x64 pixel grid unless noted otherwise.",
+  "roadmapVersion": "0.0.0.2",
+  "nextMilestone": {
+    "version": "0.0.0.3",
+    "title": "Rocks",
+    "roadmapFile": "ROADMAP.md"
+  },
   "assets": [
     {
       "id": "shadow",

@@ -1,0 +1,456 @@
+{
+  "folder": "TinySwords/Terrain/Decorations/Bushes",
+  "tileSize": 64,
+  "description": "Animated terrain decoration bushes for the Tiny Swords asset pack. Each variant is an 8-frame horizontal sprite sheet exported from Bushes.aseprite.",
+  "roadmapVersion": "0.0.0.2",
+  "nextMilestone": {
+    "version": "0.0.0.3",
+    "title": "Rocks",
+    "roadmapFile": "ROADMAP.md"
+  },
+  "renderLayers": {
+    "props": {
+      "order": "After ground tiles, cliff bases, and stair ramps; before top overlays (clouds, etc.).",
+      "ySort": true,
+      "note": "Props at the same tile row are drawn in map order; props further south (higher y) draw on top of props further north."
+    }
+  },
+  "assets": [
+    {
+      "id": "bushe1",
+      "name": "Bushe 1",
+      "files": [
+        "Bushe1.png",
+        "Bushes.aseprite"
+      ],
+      "type": "animation",
+      "sourceFile": "Bushes.aseprite",
+      "frameSize": {
+        "width": 128,
+        "height": 128
+      },
+      "frameCount": 8,
+      "frameDurationMs": 100,
+      "fps": 10,
+      "loopDurationMs": 800,
+      "layout": "horizontal-strip",
+      "sheetSize": {
+        "width": 1024,
+        "height": 128
+      },
+      "loop": true,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "index": 1,
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "index": 2,
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "index": 3,
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "index": 5,
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "index": 6,
+          "x": 768,
+          "y": 0,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "index": 7,
+          "x": 896,
+          "y": 0,
+          "width": 128,
+          "height": 128
+        }
+      ],
+      "anchor": {
+        "x": 64,
+        "y": 128,
+        "note": "Bottom-centre of the frame meets the ground tile."
+      },
+      "footprint": {
+        "tilesWide": 1,
+        "tilesTall": 1,
+        "note": "Collision/placement occupies one 64x64 tile; sprite artwork extends above and sideways."
+      },
+      "renderLayer": "props",
+      "ySort": true,
+      "usage": {
+        "summary": "Animated bush variant (Bushe 1). Loop all 8 frames at 10 fps.",
+        "note": "Each frame is 128x128. Anchor bottom-centre on a walkable grass tile. Edit timing in Bushes.aseprite if needed."
+      },
+      "placementRules": {
+        "onLandOnly": {
+          "rule": "Place only on land cells (elevation >= 0). Never on water, cliff-face cells, cliff-base cells, or stair/ramp cells.",
+          "appliesTo": "Walkable grass at any elevation tier.",
+          "doNotApply": "Water (elevation -1), cells below south-facing cliffs, ramp landing/top cells, or shoreline edge tiles where the wide sprite would overhang water or cliffs."
+        },
+        "preferInteriorGrass": {
+          "rule": "Prefer fully-surrounded centre grass (autotile piece 5, mask 1111) so the 128px-wide sprite does not bleed over terrain edges.",
+          "preferredPieceId": 5
+        }
+      }
+    },
+    {
+      "id": "bushe2",
+      "name": "Bushe 2",
+      "files": [
+        "Bushe2.png",
+        "Bushes.aseprite"
+      ],
+      "type": "animation",
+      "sourceFile": "Bushes.aseprite",
+      "frameSize": {
+        "width": 128,
+        "height": 128
+      },
+      "frameCount": 8,
+      "frameDurationMs": 100,
+      "fps": 10,
+      "loopDurationMs": 800,
+      "layout": "horizontal-strip",
+      "sheetSize": {
+        "width": 1024,
+        "height": 128
+      },
+      "loop": true,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "index": 1,
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "index": 2,
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "index": 3,
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "index": 5,
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "index": 6,
+          "x": 768,
+          "y": 0,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "index": 7,
+          "x": 896,
+          "y": 0,
+          "width": 128,
+          "height": 128
+        }
+      ],
+      "anchor": {
+        "x": 64,
+        "y": 128,
+        "note": "Bottom-centre of the frame meets the ground tile."
+      },
+      "footprint": {
+        "tilesWide": 1,
+        "tilesTall": 1,
+        "note": "Collision/placement occupies one 64x64 tile; sprite artwork extends above and sideways."
+      },
+      "renderLayer": "props",
+      "ySort": true,
+      "usage": {
+        "summary": "Animated bush variant (Bushe 2). Loop all 8 frames at 10 fps.",
+        "note": "Each frame is 128x128. Anchor bottom-centre on a walkable grass tile. Edit timing in Bushes.aseprite if needed."
+      },
+      "placementRules": {
+        "onLandOnly": {
+          "rule": "Place only on land cells (elevation >= 0). Never on water, cliff-face cells, cliff-base cells, or stair/ramp cells.",
+          "appliesTo": "Walkable grass at any elevation tier.",
+          "doNotApply": "Water (elevation -1), cells below south-facing cliffs, ramp landing/top cells, or shoreline edge tiles where the wide sprite would overhang water or cliffs."
+        },
+        "preferInteriorGrass": {
+          "rule": "Prefer fully-surrounded centre grass (autotile piece 5, mask 1111) so the 128px-wide sprite does not bleed over terrain edges.",
+          "preferredPieceId": 5
+        }
+      }
+    },
+    {
+      "id": "bushe3",
+      "name": "Bushe 3",
+      "files": [
+        "Bushe3.png",
+        "Bushes.aseprite"
+      ],
+      "type": "animation",
+      "sourceFile": "Bushes.aseprite",
+      "frameSize": {
+        "width": 128,
+        "height": 128
+      },
+      "frameCount": 8,
+      "frameDurationMs": 100,
+      "fps": 10,
+      "loopDurationMs": 800,
+      "layout": "horizontal-strip",
+      "sheetSize": {
+        "width": 1024,
+        "height": 128
+      },
+      "loop": true,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "index": 1,
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "index": 2,
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "index": 3,
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "index": 5,
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "index": 6,
+          "x": 768,
+          "y": 0,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "index": 7,
+          "x": 896,
+          "y": 0,
+          "width": 128,
+          "height": 128
+        }
+      ],
+      "anchor": {
+        "x": 64,
+        "y": 128,
+        "note": "Bottom-centre of the frame meets the ground tile."
+      },
+      "footprint": {
+        "tilesWide": 1,
+        "tilesTall": 1,
+        "note": "Collision/placement occupies one 64x64 tile; sprite artwork extends above and sideways."
+      },
+      "renderLayer": "props",
+      "ySort": true,
+      "usage": {
+        "summary": "Animated bush variant (Bushe 3). Loop all 8 frames at 10 fps.",
+        "note": "Each frame is 128x128. Anchor bottom-centre on a walkable grass tile. Edit timing in Bushes.aseprite if needed."
+      },
+      "placementRules": {
+        "onLandOnly": {
+          "rule": "Place only on land cells (elevation >= 0). Never on water, cliff-face cells, cliff-base cells, or stair/ramp cells.",
+          "appliesTo": "Walkable grass at any elevation tier.",
+          "doNotApply": "Water (elevation -1), cells below south-facing cliffs, ramp landing/top cells, or shoreline edge tiles where the wide sprite would overhang water or cliffs."
+        },
+        "preferInteriorGrass": {
+          "rule": "Prefer fully-surrounded centre grass (autotile piece 5, mask 1111) so the 128px-wide sprite does not bleed over terrain edges.",
+          "preferredPieceId": 5
+        }
+      }
+    },
+    {
+      "id": "bushe4",
+      "name": "Bushe 4",
+      "files": [
+        "Bushe4.png",
+        "Bushes.aseprite"
+      ],
+      "type": "animation",
+      "sourceFile": "Bushes.aseprite",
+      "frameSize": {
+        "width": 128,
+        "height": 128
+      },
+      "frameCount": 8,
+      "frameDurationMs": 100,
+      "fps": 10,
+      "loopDurationMs": 800,
+      "layout": "horizontal-strip",
+      "sheetSize": {
+        "width": 1024,
+        "height": 128
+      },
+      "loop": true,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "index": 1,
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "index": 2,
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "index": 3,
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "index": 5,
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "index": 6,
+          "x": 768,
+          "y": 0,
+          "width": 128,
+          "height": 128
+        },
+        {
+          "index": 7,
+          "x": 896,
+          "y": 0,
+          "width": 128,
+          "height": 128
+        }
+      ],
+      "anchor": {
+        "x": 64,
+        "y": 128,
+        "note": "Bottom-centre of the frame meets the ground tile."
+      },
+      "footprint": {
+        "tilesWide": 1,
+        "tilesTall": 1,
+        "note": "Collision/placement occupies one 64x64 tile; sprite artwork extends above and sideways."
+      },
+      "renderLayer": "props",
+      "ySort": true,
+      "usage": {
+        "summary": "Animated bush variant (Bushe 4). Loop all 8 frames at 10 fps.",
+        "note": "Each frame is 128x128. Anchor bottom-centre on a walkable grass tile. Edit timing in Bushes.aseprite if needed."
+      },
+      "placementRules": {
+        "onLandOnly": {
+          "rule": "Place only on land cells (elevation >= 0). Never on water, cliff-face cells, cliff-base cells, or stair/ramp cells.",
+          "appliesTo": "Walkable grass at any elevation tier.",
+          "doNotApply": "Water (elevation -1), cells below south-facing cliffs, ramp landing/top cells, or shoreline edge tiles where the wide sprite would overhang water or cliffs."
+        },
+        "preferInteriorGrass": {
+          "rule": "Prefer fully-surrounded centre grass (autotile piece 5, mask 1111) so the 128px-wide sprite does not bleed over terrain edges.",
+          "preferredPieceId": 5
+        }
+      }
+    }
+  ]
+}

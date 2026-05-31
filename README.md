@@ -1,6 +1,6 @@
 # Tiny Swords Tileset Guide
 
-**Version 0.0.0.1**
+**Version 0.0.0.2**
 
 A machine-readable usage guide for the **Tiny Swords** terrain tileset
 (`Terrain/Tileset`), designed so an IDE / map tool can place tiles correctly and
@@ -9,14 +9,28 @@ reference imagery only — **not** the Tiny Swords art assets themselves. The pa
 is free (name-your-own-price) from its creator **Pixel Frog**; grab it directly:
 <https://pixelfrog-assets.itch.io/tiny-swords>.
 
+See **[ROADMAP.md](ROADMAP.md)** for the long-term plan (10 small milestones from
+trees/bushes through full-pack coverage).
+
 ## Contents
 
 | File | Description |
 | --- | --- |
 | `guide.json` | The full tileset specification: asset metadata, the RuleTile-style 4-neighbour autotile lookup, elevation system (5 levels + road overlay), cliff/stair/ramp rules, shadow & water-foam placement, and the hard placement invariants. |
+| `ROADMAP.md` | Long-term roadmap: versioning scheme and 10 incremental milestones (next: **v0.0.0.3 — Rocks**). |
 | `Tilemap_color1_grid.png` | `Tilemap_color1` overlaid with a 64×64 grid and **raw row-major sheet IDs (1–54)**. |
 | `Tilemap_color1_guide_ids.png` | The same sheet annotated with the **semantic piece IDs** used in `guide.json` (e.g. `FG 5` centre grass, `EG 21` water cliff, `ST 25` ramp top) and each tile's role. |
 | `example-map.png` | A rendered 200×200 example map produced from `guide.json` (random multi-elevation terrain with a left-side sea, valley water channels, and frequent access ramps). |
+
+## Per-folder guides
+
+Each asset-pack folder under `TinySwords/` gets its own `guide.json`, mirroring the pack layout:
+
+| Path | Description |
+| --- | --- |
+| [`guide.json`](guide.json) | Terrain tileset (`Terrain/Tileset`): autotiling, elevation, cliffs, ramps, shadows, foam. |
+| [`Terrain/Resources/Wood/Trees/guide.json`](Terrain/Resources/Wood/Trees/guide.json) | Animated trees (8-frame, `Trees.aseprite`) and static stumps: anchors, footprints, props render layer, placement rules. |
+| [`Terrain/Decorations/Bushes/guide.json`](Terrain/Decorations/Bushes/guide.json) | Animated bushes (8-frame, `Bushes.aseprite`): anchors, footprints, props render layer, placement rules. |
 
 ## Key concepts captured in `guide.json`
 
@@ -43,6 +57,12 @@ is free (name-your-own-price) from its creator **Pixel Frog**; grab it directly:
 `0.0.0.1` — first snapshot of the terrain tileset guide (autotiling, elevation,
 cliffs, stairs/ramps, shadows, foam, placement invariants, ramp density) with
 annotated reference sheets and a rendered example map.
+
+`0.0.0.2` — trees and bushes: per-folder guides for animated trees/stumps and
+animated bushes (anchors, footprints, props layer, placement rules); example map
+renderer scatters y-sorted props on interior grass.
+
+**Next:** `0.0.0.3` — rocks ([ROADMAP.md](ROADMAP.md)).
 
 ## Credits & license
 

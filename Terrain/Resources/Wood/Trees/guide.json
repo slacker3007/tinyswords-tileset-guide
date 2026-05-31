@@ -1,0 +1,608 @@
+{
+  "folder": "TinySwords/Terrain/Resources/Wood/Trees",
+  "tileSize": 64,
+  "description": "Wood resource trees and harvested stumps for the Tiny Swords asset pack. Live trees are 8-frame horizontal sprite sheets exported from Trees.aseprite; stumps are static sprites.",
+  "roadmapVersion": "0.0.0.2",
+  "nextMilestone": {
+    "version": "0.0.0.3",
+    "title": "Rocks",
+    "roadmapFile": "ROADMAP.md"
+  },
+  "renderLayers": {
+    "props": {
+      "order": "After ground tiles, cliff bases, and stair ramps; before top overlays (clouds, etc.).",
+      "ySort": true,
+      "note": "Props at the same tile row are drawn in map order; props further south (higher y) draw on top of props further north."
+    }
+  },
+  "assets": [
+    {
+      "id": "tree1",
+      "name": "Tree 1",
+      "files": [
+        "Tree1.png",
+        "Trees.aseprite"
+      ],
+      "type": "animation",
+      "sourceFile": "Trees.aseprite",
+      "frameSize": {
+        "width": 192,
+        "height": 256
+      },
+      "frameCount": 8,
+      "frameDurationMs": 100,
+      "fps": 10,
+      "loopDurationMs": 800,
+      "layout": "horizontal-strip",
+      "sheetSize": {
+        "width": 1536,
+        "height": 256
+      },
+      "loop": true,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 192,
+          "height": 256
+        },
+        {
+          "index": 1,
+          "x": 192,
+          "y": 0,
+          "width": 192,
+          "height": 256
+        },
+        {
+          "index": 2,
+          "x": 384,
+          "y": 0,
+          "width": 192,
+          "height": 256
+        },
+        {
+          "index": 3,
+          "x": 576,
+          "y": 0,
+          "width": 192,
+          "height": 256
+        },
+        {
+          "index": 4,
+          "x": 768,
+          "y": 0,
+          "width": 192,
+          "height": 256
+        },
+        {
+          "index": 5,
+          "x": 960,
+          "y": 0,
+          "width": 192,
+          "height": 256
+        },
+        {
+          "index": 6,
+          "x": 1152,
+          "y": 0,
+          "width": 192,
+          "height": 256
+        },
+        {
+          "index": 7,
+          "x": 1344,
+          "y": 0,
+          "width": 192,
+          "height": 256
+        }
+      ],
+      "anchor": {
+        "x": 96,
+        "y": 256,
+        "note": "Bottom-centre of the frame meets the ground tile."
+      },
+      "footprint": {
+        "tilesWide": 1,
+        "tilesTall": 1,
+        "note": "Collision/placement occupies one 64x64 tile; sprite artwork extends above and sideways."
+      },
+      "renderLayer": "props",
+      "ySort": true,
+      "usage": {
+        "summary": "Animated tree variant (Tree 1). Loop all 8 frames at 10 fps.",
+        "note": "Each frame is 192x256. Anchor bottom-centre on a walkable grass tile. Edit timing in Trees.aseprite if needed."
+      },
+      "placementRules": {
+        "onLandOnly": {
+          "rule": "Place only on land cells (elevation >= 0). Never on water, cliff-face cells, cliff-base cells, or stair/ramp cells.",
+          "appliesTo": "Walkable grass at any elevation tier.",
+          "doNotApply": "Water (elevation -1), cells below south-facing cliffs, ramp landing/top cells, or shoreline edge tiles where the wide sprite would overhang water or cliffs."
+        },
+        "preferInteriorGrass": {
+          "rule": "Prefer fully-surrounded centre grass (autotile piece 5, mask 1111) so the 192px-wide sprite does not bleed over terrain edges.",
+          "preferredPieceId": 5
+        }
+      }
+    },
+    {
+      "id": "tree2",
+      "name": "Tree 2",
+      "files": [
+        "Tree2.png",
+        "Trees.aseprite"
+      ],
+      "type": "animation",
+      "sourceFile": "Trees.aseprite",
+      "frameSize": {
+        "width": 192,
+        "height": 256
+      },
+      "frameCount": 8,
+      "frameDurationMs": 100,
+      "fps": 10,
+      "loopDurationMs": 800,
+      "layout": "horizontal-strip",
+      "sheetSize": {
+        "width": 1536,
+        "height": 256
+      },
+      "loop": true,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 192,
+          "height": 256
+        },
+        {
+          "index": 1,
+          "x": 192,
+          "y": 0,
+          "width": 192,
+          "height": 256
+        },
+        {
+          "index": 2,
+          "x": 384,
+          "y": 0,
+          "width": 192,
+          "height": 256
+        },
+        {
+          "index": 3,
+          "x": 576,
+          "y": 0,
+          "width": 192,
+          "height": 256
+        },
+        {
+          "index": 4,
+          "x": 768,
+          "y": 0,
+          "width": 192,
+          "height": 256
+        },
+        {
+          "index": 5,
+          "x": 960,
+          "y": 0,
+          "width": 192,
+          "height": 256
+        },
+        {
+          "index": 6,
+          "x": 1152,
+          "y": 0,
+          "width": 192,
+          "height": 256
+        },
+        {
+          "index": 7,
+          "x": 1344,
+          "y": 0,
+          "width": 192,
+          "height": 256
+        }
+      ],
+      "anchor": {
+        "x": 96,
+        "y": 256,
+        "note": "Bottom-centre of the frame meets the ground tile."
+      },
+      "footprint": {
+        "tilesWide": 1,
+        "tilesTall": 1,
+        "note": "Collision/placement occupies one 64x64 tile; sprite artwork extends above and sideways."
+      },
+      "renderLayer": "props",
+      "ySort": true,
+      "usage": {
+        "summary": "Animated tree variant (Tree 2). Loop all 8 frames at 10 fps.",
+        "note": "Each frame is 192x256. Anchor bottom-centre on a walkable grass tile. Edit timing in Trees.aseprite if needed."
+      },
+      "placementRules": {
+        "onLandOnly": {
+          "rule": "Place only on land cells (elevation >= 0). Never on water, cliff-face cells, cliff-base cells, or stair/ramp cells.",
+          "appliesTo": "Walkable grass at any elevation tier.",
+          "doNotApply": "Water (elevation -1), cells below south-facing cliffs, ramp landing/top cells, or shoreline edge tiles where the wide sprite would overhang water or cliffs."
+        },
+        "preferInteriorGrass": {
+          "rule": "Prefer fully-surrounded centre grass (autotile piece 5, mask 1111) so the 192px-wide sprite does not bleed over terrain edges.",
+          "preferredPieceId": 5
+        }
+      }
+    },
+    {
+      "id": "tree3",
+      "name": "Tree 3",
+      "files": [
+        "Tree3.png",
+        "Trees.aseprite"
+      ],
+      "type": "animation",
+      "sourceFile": "Trees.aseprite",
+      "frameSize": {
+        "width": 192,
+        "height": 192
+      },
+      "frameCount": 8,
+      "frameDurationMs": 100,
+      "fps": 10,
+      "loopDurationMs": 800,
+      "layout": "horizontal-strip",
+      "sheetSize": {
+        "width": 1536,
+        "height": 192
+      },
+      "loop": true,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 192,
+          "height": 192
+        },
+        {
+          "index": 1,
+          "x": 192,
+          "y": 0,
+          "width": 192,
+          "height": 192
+        },
+        {
+          "index": 2,
+          "x": 384,
+          "y": 0,
+          "width": 192,
+          "height": 192
+        },
+        {
+          "index": 3,
+          "x": 576,
+          "y": 0,
+          "width": 192,
+          "height": 192
+        },
+        {
+          "index": 4,
+          "x": 768,
+          "y": 0,
+          "width": 192,
+          "height": 192
+        },
+        {
+          "index": 5,
+          "x": 960,
+          "y": 0,
+          "width": 192,
+          "height": 192
+        },
+        {
+          "index": 6,
+          "x": 1152,
+          "y": 0,
+          "width": 192,
+          "height": 192
+        },
+        {
+          "index": 7,
+          "x": 1344,
+          "y": 0,
+          "width": 192,
+          "height": 192
+        }
+      ],
+      "anchor": {
+        "x": 96,
+        "y": 192,
+        "note": "Bottom-centre of the frame meets the ground tile."
+      },
+      "footprint": {
+        "tilesWide": 1,
+        "tilesTall": 1,
+        "note": "Collision/placement occupies one 64x64 tile; sprite artwork extends above and sideways."
+      },
+      "renderLayer": "props",
+      "ySort": true,
+      "usage": {
+        "summary": "Animated tree variant (Tree 3). Loop all 8 frames at 10 fps.",
+        "note": "Each frame is 192x192. Anchor bottom-centre on a walkable grass tile. Edit timing in Trees.aseprite if needed."
+      },
+      "placementRules": {
+        "onLandOnly": {
+          "rule": "Place only on land cells (elevation >= 0). Never on water, cliff-face cells, cliff-base cells, or stair/ramp cells.",
+          "appliesTo": "Walkable grass at any elevation tier.",
+          "doNotApply": "Water (elevation -1), cells below south-facing cliffs, ramp landing/top cells, or shoreline edge tiles where the wide sprite would overhang water or cliffs."
+        },
+        "preferInteriorGrass": {
+          "rule": "Prefer fully-surrounded centre grass (autotile piece 5, mask 1111) so the 192px-wide sprite does not bleed over terrain edges.",
+          "preferredPieceId": 5
+        }
+      }
+    },
+    {
+      "id": "tree4",
+      "name": "Tree 4",
+      "files": [
+        "Tree4.png",
+        "Trees.aseprite"
+      ],
+      "type": "animation",
+      "sourceFile": "Trees.aseprite",
+      "frameSize": {
+        "width": 192,
+        "height": 192
+      },
+      "frameCount": 8,
+      "frameDurationMs": 100,
+      "fps": 10,
+      "loopDurationMs": 800,
+      "layout": "horizontal-strip",
+      "sheetSize": {
+        "width": 1536,
+        "height": 192
+      },
+      "loop": true,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 192,
+          "height": 192
+        },
+        {
+          "index": 1,
+          "x": 192,
+          "y": 0,
+          "width": 192,
+          "height": 192
+        },
+        {
+          "index": 2,
+          "x": 384,
+          "y": 0,
+          "width": 192,
+          "height": 192
+        },
+        {
+          "index": 3,
+          "x": 576,
+          "y": 0,
+          "width": 192,
+          "height": 192
+        },
+        {
+          "index": 4,
+          "x": 768,
+          "y": 0,
+          "width": 192,
+          "height": 192
+        },
+        {
+          "index": 5,
+          "x": 960,
+          "y": 0,
+          "width": 192,
+          "height": 192
+        },
+        {
+          "index": 6,
+          "x": 1152,
+          "y": 0,
+          "width": 192,
+          "height": 192
+        },
+        {
+          "index": 7,
+          "x": 1344,
+          "y": 0,
+          "width": 192,
+          "height": 192
+        }
+      ],
+      "anchor": {
+        "x": 96,
+        "y": 192,
+        "note": "Bottom-centre of the frame meets the ground tile."
+      },
+      "footprint": {
+        "tilesWide": 1,
+        "tilesTall": 1,
+        "note": "Collision/placement occupies one 64x64 tile; sprite artwork extends above and sideways."
+      },
+      "renderLayer": "props",
+      "ySort": true,
+      "usage": {
+        "summary": "Animated tree variant (Tree 4). Loop all 8 frames at 10 fps.",
+        "note": "Each frame is 192x192. Anchor bottom-centre on a walkable grass tile. Edit timing in Trees.aseprite if needed."
+      },
+      "placementRules": {
+        "onLandOnly": {
+          "rule": "Place only on land cells (elevation >= 0). Never on water, cliff-face cells, cliff-base cells, or stair/ramp cells.",
+          "appliesTo": "Walkable grass at any elevation tier.",
+          "doNotApply": "Water (elevation -1), cells below south-facing cliffs, ramp landing/top cells, or shoreline edge tiles where the wide sprite would overhang water or cliffs."
+        },
+        "preferInteriorGrass": {
+          "rule": "Prefer fully-surrounded centre grass (autotile piece 5, mask 1111) so the 192px-wide sprite does not bleed over terrain edges.",
+          "preferredPieceId": 5
+        }
+      }
+    },
+    {
+      "id": "stump1",
+      "name": "Stump 1",
+      "files": [
+        "Stump 1.png"
+      ],
+      "type": "static-sprite",
+      "size": {
+        "width": 192,
+        "height": 256
+      },
+      "anchor": {
+        "x": 96,
+        "y": 256,
+        "note": "Bottom-centre of the sprite meets the ground tile."
+      },
+      "footprint": {
+        "tilesWide": 1,
+        "tilesTall": 1
+      },
+      "renderLayer": "props",
+      "ySort": true,
+      "usage": {
+        "summary": "Harvested tree stump (Stump 1). Static replacement for the matching live tree.",
+        "note": "Same anchor and footprint as live trees. Full harvest/resource semantics are documented in v0.0.0.5 (Resource semantics)."
+      },
+      "resourceLink": {
+        "harvestedFrom": "tree1",
+        "milestone": "0.0.0.5",
+        "note": "Tree-to-stump state transition and wood yields are defined in the Wood resource guide (future milestone)."
+      },
+      "placementRules": {
+        "onLandOnly": {
+          "rule": "Same placement constraints as live trees: land only, not on water, cliffs, ramps, or exposed shoreline edges.",
+          "appliesTo": "Walkable grass at any elevation tier."
+        }
+      }
+    },
+    {
+      "id": "stump2",
+      "name": "Stump 2",
+      "files": [
+        "Stump 2.png"
+      ],
+      "type": "static-sprite",
+      "size": {
+        "width": 192,
+        "height": 256
+      },
+      "anchor": {
+        "x": 96,
+        "y": 256,
+        "note": "Bottom-centre of the sprite meets the ground tile."
+      },
+      "footprint": {
+        "tilesWide": 1,
+        "tilesTall": 1
+      },
+      "renderLayer": "props",
+      "ySort": true,
+      "usage": {
+        "summary": "Harvested tree stump (Stump 2). Static replacement for the matching live tree.",
+        "note": "Same anchor and footprint as live trees. Full harvest/resource semantics are documented in v0.0.0.5 (Resource semantics)."
+      },
+      "resourceLink": {
+        "harvestedFrom": "tree2",
+        "milestone": "0.0.0.5",
+        "note": "Tree-to-stump state transition and wood yields are defined in the Wood resource guide (future milestone)."
+      },
+      "placementRules": {
+        "onLandOnly": {
+          "rule": "Same placement constraints as live trees: land only, not on water, cliffs, ramps, or exposed shoreline edges.",
+          "appliesTo": "Walkable grass at any elevation tier."
+        }
+      }
+    },
+    {
+      "id": "stump3",
+      "name": "Stump 3",
+      "files": [
+        "Stump 3.png"
+      ],
+      "type": "static-sprite",
+      "size": {
+        "width": 192,
+        "height": 256
+      },
+      "anchor": {
+        "x": 96,
+        "y": 256,
+        "note": "Bottom-centre of the sprite meets the ground tile."
+      },
+      "footprint": {
+        "tilesWide": 1,
+        "tilesTall": 1
+      },
+      "renderLayer": "props",
+      "ySort": true,
+      "usage": {
+        "summary": "Harvested tree stump (Stump 3). Static replacement for the matching live tree.",
+        "note": "Same anchor and footprint as live trees. Full harvest/resource semantics are documented in v0.0.0.5 (Resource semantics)."
+      },
+      "resourceLink": {
+        "harvestedFrom": "tree3",
+        "milestone": "0.0.0.5",
+        "note": "Tree-to-stump state transition and wood yields are defined in the Wood resource guide (future milestone)."
+      },
+      "placementRules": {
+        "onLandOnly": {
+          "rule": "Same placement constraints as live trees: land only, not on water, cliffs, ramps, or exposed shoreline edges.",
+          "appliesTo": "Walkable grass at any elevation tier."
+        }
+      }
+    },
+    {
+      "id": "stump4",
+      "name": "Stump 4",
+      "files": [
+        "Stump 4.png"
+      ],
+      "type": "static-sprite",
+      "size": {
+        "width": 192,
+        "height": 256
+      },
+      "anchor": {
+        "x": 96,
+        "y": 256,
+        "note": "Bottom-centre of the sprite meets the ground tile."
+      },
+      "footprint": {
+        "tilesWide": 1,
+        "tilesTall": 1
+      },
+      "renderLayer": "props",
+      "ySort": true,
+      "usage": {
+        "summary": "Harvested tree stump (Stump 4). Static replacement for the matching live tree.",
+        "note": "Same anchor and footprint as live trees. Full harvest/resource semantics are documented in v0.0.0.5 (Resource semantics)."
+      },
+      "resourceLink": {
+        "harvestedFrom": "tree4",
+        "milestone": "0.0.0.5",
+        "note": "Tree-to-stump state transition and wood yields are defined in the Wood resource guide (future milestone)."
+      },
+      "placementRules": {
+        "onLandOnly": {
+          "rule": "Same placement constraints as live trees: land only, not on water, cliffs, ramps, or exposed shoreline edges.",
+          "appliesTo": "Walkable grass at any elevation tier."
+        }
+      }
+    }
+  ]
+}
