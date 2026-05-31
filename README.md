@@ -1,4 +1,4 @@
-# TinySwords Tileset Guide
+# Tiny Swords Tileset Guide
 
 **Version 0.0.0.1**
 
