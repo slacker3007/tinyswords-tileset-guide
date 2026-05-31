@@ -1,0 +1,665 @@
+{
+  "folder": "TinySwords/Terrain/Decorations/Rocks in the Water",
+  "tileSize": 64,
+  "description": "Animated water rock decorations for the Tiny Swords asset pack. Each variant is a 16-frame horizontal sprite sheet exported from Water Rocks_0N.aseprite.",
+  "roadmapVersion": "0.0.0.3",
+  "nextMilestone": {
+    "version": "0.0.0.4",
+    "title": "Ambient overlays",
+    "roadmapFile": "ROADMAP.md"
+  },
+  "renderLayers": {
+    "props": {
+      "order": "After ground tiles, cliff bases, and stair ramps; before top overlays (clouds, etc.).",
+      "ySort": true,
+      "note": "Water rocks share the y-sorted props layer with land props (trees, bushes, ground rocks). Because they sit on water cells, they render behind land props at the same y-sort position in practice."
+    }
+  },
+  "layeringNote": "Water rocks use the same props render layer and y-sort rules as trees, bushes, and ground rocks. They are placed on water cells only, so they appear below adjacent land props when both occupy nearby rows.",
+  "assets": [
+    {
+      "id": "waterrock1",
+      "name": "Water Rock 1",
+      "files": [
+        "Water Rocks_01.png",
+        "Water Rocks_01.aseprite"
+      ],
+      "type": "animation",
+      "sourceFile": "Water Rocks_01.aseprite",
+      "frameSize": {
+        "width": 64,
+        "height": 64
+      },
+      "frameCount": 16,
+      "frameDurationMs": 100,
+      "fps": 10,
+      "loopDurationMs": 1600,
+      "layout": "horizontal-strip",
+      "sheetSize": {
+        "width": 1024,
+        "height": 64
+      },
+      "loop": true,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 1,
+          "x": 64,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 2,
+          "x": 128,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 3,
+          "x": 192,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 4,
+          "x": 256,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 5,
+          "x": 320,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 6,
+          "x": 384,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 7,
+          "x": 448,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 8,
+          "x": 512,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 9,
+          "x": 576,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 10,
+          "x": 640,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 11,
+          "x": 704,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 12,
+          "x": 768,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 13,
+          "x": 832,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 14,
+          "x": 896,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 15,
+          "x": 960,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        }
+      ],
+      "anchor": {
+        "x": 32,
+        "y": 64,
+        "note": "Bottom-centre of the frame meets the water surface tile."
+      },
+      "footprint": {
+        "tilesWide": 1,
+        "tilesTall": 1,
+        "note": "Collision/placement occupies one 64x64 water cell; artwork fills the cell exactly."
+      },
+      "renderLayer": "props",
+      "ySort": true,
+      "usage": {
+        "summary": "Animated water rock variant (Water Rock 1). Loop all 16 frames at 10 fps.",
+        "note": "Each frame is 64x64. Anchor bottom-centre on an open water tile. Edit timing in Water Rocks_{num}.aseprite if needed."
+      },
+      "placementRules": {
+        "onWaterOnly": {
+          "rule": "Place only on open water cells (elevation -1) where all eight neighbours are also water. Never on land, shoreline foam ring, cliff bases, or ramp cells.",
+          "appliesTo": "Interior water away from shorelines and elevation drops.",
+          "doNotApply": "Land (elevation >= 0), shoreline-adjacent water, cells below cliffs, or ramp landing/top cells."
+        }
+      }
+    },
+    {
+      "id": "waterrock2",
+      "name": "Water Rock 2",
+      "files": [
+        "Water Rocks_02.png",
+        "Water Rocks_02.aseprite"
+      ],
+      "type": "animation",
+      "sourceFile": "Water Rocks_02.aseprite",
+      "frameSize": {
+        "width": 64,
+        "height": 64
+      },
+      "frameCount": 16,
+      "frameDurationMs": 100,
+      "fps": 10,
+      "loopDurationMs": 1600,
+      "layout": "horizontal-strip",
+      "sheetSize": {
+        "width": 1024,
+        "height": 64
+      },
+      "loop": true,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 1,
+          "x": 64,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 2,
+          "x": 128,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 3,
+          "x": 192,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 4,
+          "x": 256,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 5,
+          "x": 320,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 6,
+          "x": 384,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 7,
+          "x": 448,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 8,
+          "x": 512,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 9,
+          "x": 576,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 10,
+          "x": 640,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 11,
+          "x": 704,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 12,
+          "x": 768,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 13,
+          "x": 832,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 14,
+          "x": 896,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 15,
+          "x": 960,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        }
+      ],
+      "anchor": {
+        "x": 32,
+        "y": 64,
+        "note": "Bottom-centre of the frame meets the water surface tile."
+      },
+      "footprint": {
+        "tilesWide": 1,
+        "tilesTall": 1,
+        "note": "Collision/placement occupies one 64x64 water cell; artwork fills the cell exactly."
+      },
+      "renderLayer": "props",
+      "ySort": true,
+      "usage": {
+        "summary": "Animated water rock variant (Water Rock 2). Loop all 16 frames at 10 fps.",
+        "note": "Each frame is 64x64. Anchor bottom-centre on an open water tile. Edit timing in Water Rocks_{num}.aseprite if needed."
+      },
+      "placementRules": {
+        "onWaterOnly": {
+          "rule": "Place only on open water cells (elevation -1) where all eight neighbours are also water. Never on land, shoreline foam ring, cliff bases, or ramp cells.",
+          "appliesTo": "Interior water away from shorelines and elevation drops.",
+          "doNotApply": "Land (elevation >= 0), shoreline-adjacent water, cells below cliffs, or ramp landing/top cells."
+        }
+      }
+    },
+    {
+      "id": "waterrock3",
+      "name": "Water Rock 3",
+      "files": [
+        "Water Rocks_03.png",
+        "Water Rocks_03.aseprite"
+      ],
+      "type": "animation",
+      "sourceFile": "Water Rocks_03.aseprite",
+      "frameSize": {
+        "width": 64,
+        "height": 64
+      },
+      "frameCount": 16,
+      "frameDurationMs": 100,
+      "fps": 10,
+      "loopDurationMs": 1600,
+      "layout": "horizontal-strip",
+      "sheetSize": {
+        "width": 1024,
+        "height": 64
+      },
+      "loop": true,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 1,
+          "x": 64,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 2,
+          "x": 128,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 3,
+          "x": 192,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 4,
+          "x": 256,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 5,
+          "x": 320,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 6,
+          "x": 384,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 7,
+          "x": 448,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 8,
+          "x": 512,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 9,
+          "x": 576,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 10,
+          "x": 640,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 11,
+          "x": 704,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 12,
+          "x": 768,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 13,
+          "x": 832,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 14,
+          "x": 896,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 15,
+          "x": 960,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        }
+      ],
+      "anchor": {
+        "x": 32,
+        "y": 64,
+        "note": "Bottom-centre of the frame meets the water surface tile."
+      },
+      "footprint": {
+        "tilesWide": 1,
+        "tilesTall": 1,
+        "note": "Collision/placement occupies one 64x64 water cell; artwork fills the cell exactly."
+      },
+      "renderLayer": "props",
+      "ySort": true,
+      "usage": {
+        "summary": "Animated water rock variant (Water Rock 3). Loop all 16 frames at 10 fps.",
+        "note": "Each frame is 64x64. Anchor bottom-centre on an open water tile. Edit timing in Water Rocks_{num}.aseprite if needed."
+      },
+      "placementRules": {
+        "onWaterOnly": {
+          "rule": "Place only on open water cells (elevation -1) where all eight neighbours are also water. Never on land, shoreline foam ring, cliff bases, or ramp cells.",
+          "appliesTo": "Interior water away from shorelines and elevation drops.",
+          "doNotApply": "Land (elevation >= 0), shoreline-adjacent water, cells below cliffs, or ramp landing/top cells."
+        }
+      }
+    },
+    {
+      "id": "waterrock4",
+      "name": "Water Rock 4",
+      "files": [
+        "Water Rocks_04.png",
+        "Water Rocks_04.aseprite"
+      ],
+      "type": "animation",
+      "sourceFile": "Water Rocks_04.aseprite",
+      "frameSize": {
+        "width": 64,
+        "height": 64
+      },
+      "frameCount": 16,
+      "frameDurationMs": 100,
+      "fps": 10,
+      "loopDurationMs": 1600,
+      "layout": "horizontal-strip",
+      "sheetSize": {
+        "width": 1024,
+        "height": 64
+      },
+      "loop": true,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 1,
+          "x": 64,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 2,
+          "x": 128,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 3,
+          "x": 192,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 4,
+          "x": 256,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 5,
+          "x": 320,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 6,
+          "x": 384,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 7,
+          "x": 448,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 8,
+          "x": 512,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 9,
+          "x": 576,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 10,
+          "x": 640,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 11,
+          "x": 704,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 12,
+          "x": 768,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 13,
+          "x": 832,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 14,
+          "x": 896,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        },
+        {
+          "index": 15,
+          "x": 960,
+          "y": 0,
+          "width": 64,
+          "height": 64
+        }
+      ],
+      "anchor": {
+        "x": 32,
+        "y": 64,
+        "note": "Bottom-centre of the frame meets the water surface tile."
+      },
+      "footprint": {
+        "tilesWide": 1,
+        "tilesTall": 1,
+        "note": "Collision/placement occupies one 64x64 water cell; artwork fills the cell exactly."
+      },
+      "renderLayer": "props",
+      "ySort": true,
+      "usage": {
+        "summary": "Animated water rock variant (Water Rock 4). Loop all 16 frames at 10 fps.",
+        "note": "Each frame is 64x64. Anchor bottom-centre on an open water tile. Edit timing in Water Rocks_{num}.aseprite if needed."
+      },
+      "placementRules": {
+        "onWaterOnly": {
+          "rule": "Place only on open water cells (elevation -1) where all eight neighbours are also water. Never on land, shoreline foam ring, cliff bases, or ramp cells.",
+          "appliesTo": "Interior water away from shorelines and elevation drops.",
+          "doNotApply": "Land (elevation >= 0), shoreline-adjacent water, cells below cliffs, or ramp landing/top cells."
+        }
+      }
+    }
+  ]
+}

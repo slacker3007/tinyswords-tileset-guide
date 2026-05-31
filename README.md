@@ -1,6 +1,6 @@
 # Tiny Swords Tileset Guide
 
-**Version 0.0.0.2**
+**Version 0.0.0.3**
 
 A machine-readable usage guide for the **Tiny Swords** terrain tileset
 (`Terrain/Tileset`), designed so an IDE / map tool can place tiles correctly and
@@ -17,10 +17,20 @@ trees/bushes through full-pack coverage).
 | File | Description |
 | --- | --- |
 | `guide.json` | The full tileset specification: asset metadata, the RuleTile-style 4-neighbour autotile lookup, elevation system (5 levels + road overlay), cliff/stair/ramp rules, shadow & water-foam placement, and the hard placement invariants. |
-| `ROADMAP.md` | Long-term roadmap: versioning scheme and 10 incremental milestones (next: **v0.0.0.3 — Rocks**). |
+| `ROADMAP.md` | Long-term roadmap: versioning scheme and 10 incremental milestones (next: **v0.0.0.4 — Ambient overlays**). |
 | `Tilemap_color1_grid.png` | `Tilemap_color1` overlaid with a 64×64 grid and **raw row-major sheet IDs (1–54)**. |
 | `Tilemap_color1_guide_ids.png` | The same sheet annotated with the **semantic piece IDs** used in `guide.json` (e.g. `FG 5` centre grass, `EG 21` water cliff, `ST 25` ramp top) and each tile's role. |
-| `example-map.png` | A rendered 200×200 example map produced from `guide.json` (random multi-elevation terrain with a left-side sea, valley water channels, and frequent access ramps). |
+| `example-map.png` | A rendered 200×200 example map produced from `guide.json` (random multi-elevation terrain with a left-side sea, valley water channels, frequent access ramps, and scattered props including trees, bushes, rocks, and water rocks). |
+| `example-preview.gif` / `example-preview.webp` | Animated 28×18-tile crop of the example map. 16-frame loop at 10 fps showing trees, bushes, water foam, and water rocks all cycling through their full Aseprite animations. The WebP is lossless and small; the GIF is included for renderers that cannot display animated WebP. |
+
+## Animated preview
+
+![Animated tileset preview](example-preview.gif)
+
+The static [`example-map.png`](example-map.png) bakes one frame per animated
+sprite. The preview above is a 28×18-tile window automatically chosen for prop
+variety (trees, bushes, ground rocks, stumps, and a water rock), composited
+fresh per frame so foam and animated props loop visibly.
 
 ## Per-folder guides
 
@@ -31,6 +41,8 @@ Each asset-pack folder under `TinySwords/` gets its own `guide.json`, mirroring 
 | [`guide.json`](guide.json) | Terrain tileset (`Terrain/Tileset`): autotiling, elevation, cliffs, ramps, shadows, foam. |
 | [`Terrain/Resources/Wood/Trees/guide.json`](Terrain/Resources/Wood/Trees/guide.json) | Animated trees (8-frame, `Trees.aseprite`) and static stumps: anchors, footprints, props render layer, placement rules. |
 | [`Terrain/Decorations/Bushes/guide.json`](Terrain/Decorations/Bushes/guide.json) | Animated bushes (8-frame, `Bushes.aseprite`): anchors, footprints, props render layer, placement rules. |
+| [`Terrain/Decorations/Rocks/guide.json`](Terrain/Decorations/Rocks/guide.json) | Static ground rocks (`Rock1`–`Rock4`): 64×64 footprints, props render layer, land-only placement rules. |
+| [`Terrain/Decorations/Rocks in the Water/guide.json`](Terrain/Decorations/Rocks in the Water/guide.json) | Animated water rocks (16-frame, `Water Rocks_0N.aseprite`): anchors, footprints, props render layer, open-water placement rules. |
 
 ## Key concepts captured in `guide.json`
 
@@ -62,7 +74,11 @@ annotated reference sheets and a rendered example map.
 animated bushes (anchors, footprints, props layer, placement rules); example map
 renderer scatters y-sorted props on interior grass.
 
-**Next:** `0.0.0.3` — rocks ([ROADMAP.md](ROADMAP.md)).
+`0.0.0.3` — rocks: per-folder guides for static ground rocks and animated water
+rocks (footprints, land vs water placement, 16-frame water-rock animation); example
+map renderer scatters ground rocks on interior grass and water rocks on open water.
+
+**Next:** `0.0.0.4` — ambient overlays ([ROADMAP.md](ROADMAP.md)).
 
 ## Credits & license
 

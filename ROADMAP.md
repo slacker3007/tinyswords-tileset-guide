@@ -6,8 +6,8 @@ milestone documents **one** asset category in `guide.json`-style rules (and
 extends the example renderer where applicable), so progress stays small and
 verifiable.
 
-**Current release:** `0.0.0.2` — trees and bushes  
-**Next milestone:** `0.0.0.3` — rocks
+**Current release:** `0.0.0.3` — rocks  
+**Next milestone:** `0.0.0.4` — ambient overlays
 
 ---
 
@@ -38,7 +38,7 @@ ships.
 - Hard placement invariants (`elevationGradient`, autopad)
 - Accessibility rules and ramp density
 
-**Not yet fully specced:** road overlay (`Tilemap_color6`), rocks, clouds,
+**Not yet fully specced:** road overlay (`Tilemap_color6`), clouds,
 resource semantics, buildings, units, particle FX, UI.
 
 ---
@@ -56,6 +56,23 @@ document:
 - Placement rules: land only; not on water, cliff bases, or ramps; prefer interior
   centre grass
 - Example renderer scatters trees, bushes, and stumps on the 200×200 map
+
+---
+
+## Already covered (v0.0.0.3)
+
+[`Terrain/Decorations/Rocks/guide.json`](Terrain/Decorations/Rocks/guide.json)
+and [`Terrain/Decorations/Rocks in the Water/guide.json`](Terrain/Decorations/Rocks%20in%20the%20Water/guide.json)
+document:
+
+- Static ground rocks (`Rock1`–`Rock4`, 64×64 single-tile sprites)
+- Animated water rocks (`Water Rocks_01`–`04`, 16-frame sheets from
+  `Water Rocks_0N.aseprite`)
+- Per-sprite anchors (bottom-centre), 1-tile footprints, y-sorted `props` render layer
+- Placement rules: ground rocks on land only; water rocks on open water (8-neighbour
+  water cells); layering notes relative to trees/bushes
+- Example renderer scatters ground rocks on interior grass and water rocks on open
+  water in the 200×200 map
 
 ---
 
@@ -83,7 +100,7 @@ document:
 
 ---
 
-#### 2. v0.0.0.3 — Rocks **(NEXT)**
+#### 2. v0.0.0.3 — Rocks **(done)**
 
 **Scope:** Ground rocks and animated water rocks.
 
@@ -279,7 +296,7 @@ So later milestones stay small, each new `guide.json` reuses these shared concep
 
 ## How to use this roadmap
 
-1. Pick the **Next** milestone (currently **0.0.0.3 — Rocks**).
+1. Pick the **Next** milestone (currently **0.0.0.4 — Ambient overlays**).
 2. Implement guide rules + example updates for that category only.
 3. Bump [`VERSION`](VERSION), update this file’s “Current release / Next” lines,
    and tag on GitHub.

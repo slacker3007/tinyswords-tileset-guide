@@ -1,0 +1,176 @@
+{
+  "folder": "TinySwords/Terrain/Decorations/Rocks",
+  "tileSize": 64,
+  "description": "Static ground rock decorations for the Tiny Swords asset pack. Each variant is a single 64x64 sprite that fits exactly one tile cell.",
+  "roadmapVersion": "0.0.0.3",
+  "nextMilestone": {
+    "version": "0.0.0.4",
+    "title": "Ambient overlays",
+    "roadmapFile": "ROADMAP.md"
+  },
+  "renderLayers": {
+    "props": {
+      "order": "After ground tiles, cliff bases, and stair ramps; before top overlays (clouds, etc.).",
+      "ySort": true,
+      "note": "Props at the same tile row are drawn in map order; props further south (higher y) draw on top of props further north."
+    }
+  },
+  "assets": [
+    {
+      "id": "rock1",
+      "name": "Rock 1",
+      "files": [
+        "Rock1.png"
+      ],
+      "type": "static-sprite",
+      "size": {
+        "width": 64,
+        "height": 64
+      },
+      "anchor": {
+        "x": 32,
+        "y": 64,
+        "note": "Bottom-centre of the sprite meets the ground tile."
+      },
+      "footprint": {
+        "tilesWide": 1,
+        "tilesTall": 1,
+        "note": "Collision/placement occupies one 64x64 tile; artwork fills the cell exactly."
+      },
+      "renderLayer": "props",
+      "ySort": true,
+      "usage": {
+        "summary": "Ground rock variant (Rock 1). Static 64x64 decoration.",
+        "note": "Anchor bottom-centre on a walkable grass tile."
+      },
+      "placementRules": {
+        "onLandOnly": {
+          "rule": "Place only on land cells (elevation >= 0). Never on water, cliff-face cells, cliff-base cells, or stair/ramp cells.",
+          "appliesTo": "Walkable grass at any elevation tier.",
+          "doNotApply": "Water (elevation -1), cells below south-facing cliffs, ramp landing/top cells."
+        },
+        "preferInteriorGrass": {
+          "rule": "Prefer fully-surrounded centre grass (autotile piece 5, mask 1111) for consistent scatter with other props.",
+          "preferredPieceId": 5
+        }
+      }
+    },
+    {
+      "id": "rock2",
+      "name": "Rock 2",
+      "files": [
+        "Rock2.png"
+      ],
+      "type": "static-sprite",
+      "size": {
+        "width": 64,
+        "height": 64
+      },
+      "anchor": {
+        "x": 32,
+        "y": 64,
+        "note": "Bottom-centre of the sprite meets the ground tile."
+      },
+      "footprint": {
+        "tilesWide": 1,
+        "tilesTall": 1,
+        "note": "Collision/placement occupies one 64x64 tile; artwork fills the cell exactly."
+      },
+      "renderLayer": "props",
+      "ySort": true,
+      "usage": {
+        "summary": "Ground rock variant (Rock 2). Static 64x64 decoration.",
+        "note": "Anchor bottom-centre on a walkable grass tile."
+      },
+      "placementRules": {
+        "onLandOnly": {
+          "rule": "Place only on land cells (elevation >= 0). Never on water, cliff-face cells, cliff-base cells, or stair/ramp cells.",
+          "appliesTo": "Walkable grass at any elevation tier.",
+          "doNotApply": "Water (elevation -1), cells below south-facing cliffs, ramp landing/top cells."
+        },
+        "preferInteriorGrass": {
+          "rule": "Prefer fully-surrounded centre grass (autotile piece 5, mask 1111) for consistent scatter with other props.",
+          "preferredPieceId": 5
+        }
+      }
+    },
+    {
+      "id": "rock3",
+      "name": "Rock 3",
+      "files": [
+        "Rock3.png"
+      ],
+      "type": "static-sprite",
+      "size": {
+        "width": 64,
+        "height": 64
+      },
+      "anchor": {
+        "x": 32,
+        "y": 64,
+        "note": "Bottom-centre of the sprite meets the ground tile."
+      },
+      "footprint": {
+        "tilesWide": 1,
+        "tilesTall": 1,
+        "note": "Collision/placement occupies one 64x64 tile; artwork fills the cell exactly."
+      },
+      "renderLayer": "props",
+      "ySort": true,
+      "usage": {
+        "summary": "Ground rock variant (Rock 3). Static 64x64 decoration.",
+        "note": "Anchor bottom-centre on a walkable grass tile."
+      },
+      "placementRules": {
+        "onLandOnly": {
+          "rule": "Place only on land cells (elevation >= 0). Never on water, cliff-face cells, cliff-base cells, or stair/ramp cells.",
+          "appliesTo": "Walkable grass at any elevation tier.",
+          "doNotApply": "Water (elevation -1), cells below south-facing cliffs, ramp landing/top cells."
+        },
+        "preferInteriorGrass": {
+          "rule": "Prefer fully-surrounded centre grass (autotile piece 5, mask 1111) for consistent scatter with other props.",
+          "preferredPieceId": 5
+        }
+      }
+    },
+    {
+      "id": "rock4",
+      "name": "Rock 4",
+      "files": [
+        "Rock4.png"
+      ],
+      "type": "static-sprite",
+      "size": {
+        "width": 64,
+        "height": 64
+      },
+      "anchor": {
+        "x": 32,
+        "y": 64,
+        "note": "Bottom-centre of the sprite meets the ground tile."
+      },
+      "footprint": {
+        "tilesWide": 1,
+        "tilesTall": 1,
+        "note": "Collision/placement occupies one 64x64 tile; artwork fills the cell exactly."
+      },
+      "renderLayer": "props",
+      "ySort": true,
+      "usage": {
+        "summary": "Ground rock variant (Rock 4). Static 64x64 decoration.",
+        "note": "Anchor bottom-centre on a walkable grass tile."
+      },
+      "placementRules": {
+        "onLandOnly": {
+          "rule": "Place only on land cells (elevation >= 0). Never on water, cliff-face cells, cliff-base cells, or stair/ramp cells.",
+          "appliesTo": "Walkable grass at any elevation tier.",
+          "doNotApply": "Water (elevation -1), cells below south-facing cliffs, ramp landing/top cells."
+        },
+        "preferInteriorGrass": {
+          "rule": "Prefer fully-surrounded centre grass (autotile piece 5, mask 1111) for consistent scatter with other props.",
+          "preferredPieceId": 5
+        }
+      }
+    }
+  ]
+}

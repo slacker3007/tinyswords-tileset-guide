@@ -4,8 +4,8 @@
   "description": "Animated terrain decoration bushes for the Tiny Swords asset pack. Each variant is an 8-frame horizontal sprite sheet exported from Bushes.aseprite.",
   "roadmapVersion": "0.0.0.2",
   "nextMilestone": {
-    "version": "0.0.0.3",
-    "title": "Rocks",
+    "version": "0.0.0.4",
+    "title": "Ambient overlays",
     "roadmapFile": "ROADMAP.md"
   },
   "renderLayers": {
