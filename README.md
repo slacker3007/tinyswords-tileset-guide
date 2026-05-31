@@ -7,9 +7,7 @@ A machine-readable usage guide for the **Tiny Swords** terrain tileset
 procedurally generate valid maps. This repo contains the authored guide and
 reference imagery only — **not** the Tiny Swords art assets themselves. The pack
 is free (name-your-own-price) from its creator **Pixel Frog**; grab it directly:
-<https://pixelfrog-assets.itch.io/tiny-swords>. We don't bundle the art here
-because the license forbids redistributing/repackaging it (see
-[Credits & license](#credits--license)).
+<https://pixelfrog-assets.itch.io/tiny-swords>.
 
 ## Contents
 
@@ -64,10 +62,3 @@ license, but it helps and is always welcome.
 > Crediting is not required, but it helps and is always welcome.
 > You may not redistribute, resell, or repackage the assets, even if the files
 > are modified.
-
-Because of the no-redistribution clause, **the Tiny Swords art is not included
-in this folder** — download it from the link above and place this guide
-alongside your own copy of the tiles.
-
-> The `guide.json`, the annotated reference images, and the example map in this
-> folder are our own authored work.
