@@ -1,6 +1,6 @@
 # Tiny Swords Tileset Guide
 
-**Version 0.0.0.3**
+**Version 0.0.0.4**
 
 A machine-readable usage guide for the **Tiny Swords** terrain tileset
 (`Terrain/Tileset`), designed so an IDE / map tool can place tiles correctly and
@@ -17,11 +17,11 @@ trees/bushes through full-pack coverage).
 | File | Description |
 | --- | --- |
 | `guide.json` | The full tileset specification: asset metadata, the RuleTile-style 4-neighbour autotile lookup, elevation system (5 levels + road overlay), cliff/stair/ramp rules, shadow & water-foam placement, and the hard placement invariants. |
-| `ROADMAP.md` | Long-term roadmap: versioning scheme and 10 incremental milestones (next: **v0.0.0.4 — Ambient overlays**). |
+| `ROADMAP.md` | Long-term roadmap: versioning scheme and incremental milestones (next: **v0.0.1.0 — Road overlay complete**). |
 | `Tilemap_color1_grid.png` | `Tilemap_color1` overlaid with a 64×64 grid and **raw row-major sheet IDs (1–54)**. |
 | `Tilemap_color1_guide_ids.png` | The same sheet annotated with the **semantic piece IDs** used in `guide.json` (e.g. `FG 5` centre grass, `EG 21` water cliff, `ST 25` ramp top) and each tile's role. |
-| `example-map.png` | A rendered 200×200 example map produced from `guide.json` (random multi-elevation terrain with a left-side sea, valley water channels, frequent access ramps, and scattered props including trees, bushes, rocks, and water rocks). |
-| `example-preview.gif` / `example-preview.webp` | Animated 28×18-tile crop of the example map. 16-frame loop at 10 fps showing trees, bushes, water foam, and water rocks all cycling through their full Aseprite animations. The WebP is lossless and small; the GIF is included for renderers that cannot display animated WebP. |
+| `example-map.png` | A rendered 200×200 example map produced from `guide.json` (random multi-elevation terrain with a left-side sea, valley water channels, frequent access ramps, and scattered props including trees, bushes, rocks, gold stones, sheep, and water rocks). |
+| `example-preview.gif` / `example-preview.webp` | Animated 28×18-tile crop of the example map. 48-frame loop at 10 fps showing trees, bushes, water foam, water rocks, gold stones, and sheep all cycling through their full Aseprite animations. The WebP is lossless and small; the GIF is included for renderers that cannot display animated WebP. |
 
 ## Animated preview
 
@@ -29,7 +29,7 @@ trees/bushes through full-pack coverage).
 
 The static [`example-map.png`](example-map.png) bakes one frame per animated
 sprite. The preview above is a 28×18-tile window automatically chosen for prop
-variety (trees, bushes, ground rocks, stumps, and a water rock), composited
+variety (trees, bushes, ground rocks, gold stones, sheep, stumps, and a water rock), composited
 fresh per frame so foam and animated props loop visibly.
 
 ## Per-folder guides
@@ -43,6 +43,8 @@ Each asset-pack folder under `TinySwords/` gets its own `guide.json`, mirroring 
 | [`Terrain/Decorations/Bushes/guide.json`](Terrain/Decorations/Bushes/guide.json) | Animated bushes (8-frame, `Bushes.aseprite`): anchors, footprints, props render layer, placement rules. |
 | [`Terrain/Decorations/Rocks/guide.json`](Terrain/Decorations/Rocks/guide.json) | Static ground rocks (`Rock1`–`Rock4`): 64×64 footprints, props render layer, land-only placement rules. |
 | [`Terrain/Decorations/Rocks in the Water/guide.json`](Terrain/Decorations/Rocks in the Water/guide.json) | Animated water rocks (16-frame, `Water Rocks_0N.aseprite`): anchors, footprints, props render layer, open-water placement rules. |
+| [`Terrain/Resources/Gold/Gold Stones/guide.json`](Terrain/Resources/Gold/Gold%20Stones/guide.json) | Static gold stones with 6-frame highlight rings: anchors, footprints, props render layer, land placement rules. |
+| [`Terrain/Resources/Meat/Sheep/guide.json`](Terrain/Resources/Meat/Sheep/guide.json) | Animated sheep idle/move/grass states (4–12 frames, `Sheep.aseprite`): anchors, footprints, props render layer, placement rules. |
 
 ## Key concepts captured in `guide.json`
 
@@ -78,7 +80,11 @@ renderer scatters y-sorted props on interior grass.
 rocks (footprints, land vs water placement, 16-frame water-rock animation); example
 map renderer scatters ground rocks on interior grass and water rocks on open water.
 
-**Next:** `0.0.0.4` — ambient overlays ([ROADMAP.md](ROADMAP.md)).
+`0.0.0.4` — resource semantics (visuals): gold stones with highlight animations and
+sheep idle/move/grass states; example map renderer scatters gold stones and sheep on
+interior grass.
+
+**Next:** `0.0.1.0` — road overlay complete ([ROADMAP.md](ROADMAP.md)).
 
 ## Credits & license
 

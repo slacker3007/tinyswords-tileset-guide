@@ -6,8 +6,8 @@ milestone documents **one** asset category in `guide.json`-style rules (and
 extends the example renderer where applicable), so progress stays small and
 verifiable.
 
-**Current release:** `0.0.0.3` — rocks  
-**Next milestone:** `0.0.0.4` — ambient overlays
+**Current release:** `0.0.0.4` — resource semantics (visuals)  
+**Next milestone:** `0.0.1.1` — buildings
 
 ---
 
@@ -17,11 +17,10 @@ Four-segment versions (matches `0.0.0.1`):
 
 | Pattern | Meaning |
 | --- | --- |
-| `0.0.0.x` | Incremental terrain-world milestones (steps 1–4) |
-| `0.0.1.0` | **Terrain world complete** (step 5) |
-| `0.0.1.x` | Entities and effects (steps 6–8) |
-| `0.0.1.4` | UI elements (step 9) |
-| `1.0.0.0` | Full-pack release with schema and validation (step 10) |
+| `0.0.0.x` | Incremental terrain-world milestones (steps 1–3) |
+| `0.0.1.x` | Entities and effects (steps 5–7) |
+| `0.0.1.4` | UI elements (step 8) |
+| `1.0.0.0` | Full-pack release with schema and validation (step 9) |
 
 Each milestone bumps the last segment. Tag releases on GitHub when a milestone
 ships.
@@ -38,8 +37,8 @@ ships.
 - Hard placement invariants (`elevationGradient`, autopad)
 - Accessibility rules and ramp density
 
-**Not yet fully specced:** road overlay (`Tilemap_color6`), clouds,
-resource semantics, buildings, units, particle FX, UI.
+**Not yet fully specced:** road overlay (`Tilemap_color6`), buildings, units,
+particle FX, UI.
 
 ---
 
@@ -73,6 +72,23 @@ document:
   water cells); layering notes relative to trees/bushes
 - Example renderer scatters ground rocks on interior grass and water rocks on open
   water in the 200×200 map
+
+---
+
+## Already covered (v0.0.0.4)
+
+[`Terrain/Resources/Gold/Gold Stones/guide.json`](Terrain/Resources/Gold/Gold%20Stones/guide.json)
+and [`Terrain/Resources/Meat/Sheep/guide.json`](Terrain/Resources/Meat/Sheep/guide.json)
+document:
+
+- Static gold stones (`Gold Stone 1`–`6`, 128×128) with paired 6-frame highlight
+  animations (`Gold Stone N_Highlight.png`, `Gold Stones.aseprite`)
+- Animated sheep states: idle (6 frames), move (4 frames), grass (12 frames) from
+  `Sheep.aseprite`
+- Per-sprite anchors (bottom-centre), 1-tile footprints, y-sorted `props` render layer
+- Placement rules: gold stones and sheep on walkable land / interior grass
+- Example renderer scatters gold stones and sheep (idle/grass) on the 200×200 map;
+  gameplay pickup and harvest semantics remain in backlog
 
 ---
 
@@ -118,61 +134,30 @@ document:
 
 ---
 
-#### 3. v0.0.0.4 — Ambient overlays
+#### 3. v0.0.0.4 — Resource semantics (visuals) **(done)**
 
-**Scope:** Sky/cloud drift and water ambient props.
-
-| Asset | Location |
-| --- | --- |
-| `Clouds_01`–`08` (animated) | `Terrain/Decorations/Clouds` |
-| `Rubber duck` (animated) | `Terrain/Decorations/Rubber Duck` |
-
-**Deliverables:**
-
-- Formal **top overlay** render layer (above all world props)
-- Cloud drift / parallax notes
-- Water-only placement for rubber duck
-- Example: optional cloud strip and duck on water
-
----
-
-#### 4. v0.0.0.5 — Resource semantics
-
-**Scope:** Gameplay metadata layered on terrain props (harvestable resources).
+**Scope:** Gold stone props and sheep animation states — sprite metadata only (no
+yields, harvest states, or pickup semantics yet).
 
 | Asset | Location |
 | --- | --- |
-| Wood (tree → stump states) | `Terrain/Resources/Wood` |
-| `Gold Stone 1`–`6`, `Gold_Resource`, highlights | `Terrain/Resources/Gold` |
-| `Sheep` (Idle/Move/Grass), `Meat Resource` | `Terrain/Resources/Meat` |
-| `Tool_01`–`04` | `Terrain/Resources/Tools` |
+| `Gold Stone 1`–`6`, `Gold Stone N_Highlight` | `Terrain/Resources/Gold/Gold Stones` |
+| `Sheep_Idle`, `Sheep_Move`, `Sheep_Grass` (from `Sheep.aseprite`) | `Terrain/Resources/Meat/Sheep` |
 
 **Deliverables:**
 
-- Resource type definitions: yields, states, highlight sprites
-- Interaction anchor points
-- Links from tree/stump entries in step 1
-
----
-
-#### 5. v0.0.1.0 — Road overlay complete
-
-**Scope:** Finish `Tilemap_color6` road network rules.
-
-**Deliverables:**
-
-- Road-layer autotile (reuse or extend `flatGroundLookup` on overlay layer)
-- Where roads may run (elevation tiers, junctions with stairs/ramps)
-- Render pass for road overlay
-- Example map with a road network
-
-**Milestone:** terrain world is fully documented and renderable.
+- Per-folder `guide.json` under `Gold Stones/` and `Sheep/`
+- Per-sprite dimensions, bottom-centre anchors, footprints
+- Animation blocks for sheep states (frame count, fps, layout from Aseprite)
+- Highlight sprites paired with each gold stone variant
+- Placement rules: gold stones on walkable land; sheep on interior grass
+- Example renderer: scatter gold stones and a small sheep group on the map
 
 ---
 
 ### Phase B — Entities and effects
 
-#### 6. v0.0.1.1 — Buildings
+#### 5. v0.0.1.1 — Buildings
 
 **Scope:** All faction-colored structures.
 
@@ -189,7 +174,7 @@ document:
 
 ---
 
-#### 7. v0.0.1.2 — Units
+#### 6. v0.0.1.2 — Units
 
 **Scope:** Playable and NPC units (5 colors each).
 
@@ -210,7 +195,7 @@ document:
 
 ---
 
-#### 8. v0.0.1.3 — Particle FX
+#### 7. v0.0.1.3 — Particle FX
 
 **Scope:** Combat and ambient effects.
 
@@ -231,7 +216,7 @@ document:
 
 ### Phase C — UI and release
 
-#### 9. v0.0.1.4 — UI elements
+#### 8. v0.0.1.4 — UI elements
 
 **Scope:** Menus, HUD, and chrome.
 
@@ -252,7 +237,7 @@ document:
 
 ---
 
-#### 10. v1.0.0.0 — Schema and release
+#### 9. v1.0.0.0 — Schema and release
 
 **Scope:** Package the full guide for tooling and IDE consumption.
 
@@ -264,6 +249,21 @@ document:
 - Combined **kitchen-sink** demo scene: terrain + props + resources + buildings +
   units
 - Git tag `v1.0.0.0`
+
+---
+
+## Backlog
+
+Deferred items — no version assigned until promoted. Give the next free
+`0.0.0.x` segment when pulling one into the active milestone list.
+
+| Item | Original scope | Notes |
+| --- | --- | --- |
+| **Road overlay** | Finish `Tilemap_color6` road network rules | Road-layer autotile, road placement (elevation tiers, stairs/ramp junctions), render pass, example road network; was milestone `0.0.1.0` |
+| **Ambient overlays** | `Clouds_01`–`08`, `Rubber duck` | Sky/cloud drift, top overlay layer, parallax; deferred pending decision |
+| **Tools** | `Tool_01`–`04` in `Terrain/Resources/Tools` | Static tool props; was bundled with resource semantics |
+| **Resource pickups** | `Gold_Resource`, `Gold_Resource_Highlight`, `Meat Resource` | Gameplay pickup semantics and interaction anchors |
+| **Wood resource states** | Tree → stump transitions, wood yields | Links harvest behaviour to the trees guide from step 1 |
 
 ---
 
@@ -287,8 +287,8 @@ So later milestones stay small, each new `guide.json` reuses these shared concep
 ## Assumptions
 
 - **Scope:** whole Tiny Swords pack; terrain-first ordering.
-- **Rendering:** Phase A milestones (1–5) extend the example map renderer;
-  Phase B–C (6–10) are docs-first unless noted.
+- **Rendering:** Phase A milestones (1–3) extend the example map renderer;
+  Phase B–C (5–9) are docs-first unless noted.
 - **Art:** never redistributed in this repo; guides reference paths inside a
   licensed local copy of the pack.
 
@@ -296,7 +296,7 @@ So later milestones stay small, each new `guide.json` reuses these shared concep
 
 ## How to use this roadmap
 
-1. Pick the **Next** milestone (currently **0.0.0.4 — Ambient overlays**).
+1. Pick the **Next** milestone (currently **0.0.1.1 — Buildings**).
 2. Implement guide rules + example updates for that category only.
 3. Bump [`VERSION`](VERSION), update this file’s “Current release / Next” lines,
    and tag on GitHub.

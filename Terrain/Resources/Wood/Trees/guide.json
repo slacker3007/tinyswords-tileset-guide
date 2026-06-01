@@ -4,8 +4,8 @@
   "description": "Wood resource trees and harvested stumps for the Tiny Swords asset pack. Live trees are 8-frame horizontal sprite sheets exported from Trees.aseprite; stumps are static sprites.",
   "roadmapVersion": "0.0.0.2",
   "nextMilestone": {
-    "version": "0.0.0.4",
-    "title": "Ambient overlays",
+    "version": "0.0.1.0",
+    "title": "Road overlay complete",
     "roadmapFile": "ROADMAP.md"
   },
   "renderLayers": {

@@ -4,8 +4,8 @@
   "description": "Animated water rock decorations for the Tiny Swords asset pack. Each variant is a 16-frame horizontal sprite sheet exported from Water Rocks_0N.aseprite.",
   "roadmapVersion": "0.0.0.3",
   "nextMilestone": {
-    "version": "0.0.0.4",
-    "title": "Ambient overlays",
+    "version": "0.0.1.0",
+    "title": "Road overlay complete",
     "roadmapFile": "ROADMAP.md"
   },
   "renderLayers": {

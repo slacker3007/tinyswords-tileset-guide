@@ -1,0 +1,680 @@
+{
+  "folder": "TinySwords/Terrain/Resources/Gold/Gold Stones",
+  "tileSize": 64,
+  "description": "Gold resource stone props for the Tiny Swords asset pack. Each variant is a static 128x128 sprite with a separate 6-frame highlight animation sheet from Gold Stones.aseprite.",
+  "roadmapVersion": "0.0.0.4",
+  "nextMilestone": {
+    "version": "0.0.1.0",
+    "title": "Road overlay complete",
+    "roadmapFile": "ROADMAP.md"
+  },
+  "renderLayers": {
+    "props": {
+      "order": "After ground tiles, cliff bases, and stair ramps; before top overlays (clouds, etc.).",
+      "ySort": true,
+      "note": "Props at the same tile row are drawn in map order; props further south (higher y) draw on top of props further north."
+    }
+  },
+  "assets": [
+    {
+      "id": "goldStone1",
+      "name": "Gold Stone 1",
+      "files": [
+        "Gold Stone 1.png",
+        "Gold Stones.aseprite"
+      ],
+      "type": "static-sprite",
+      "sourceFile": "Gold Stones.aseprite",
+      "size": {
+        "width": 128,
+        "height": 128
+      },
+      "anchor": {
+        "x": 64,
+        "y": 128,
+        "note": "Bottom-centre of the sprite meets the ground tile."
+      },
+      "footprint": {
+        "tilesWide": 1,
+        "tilesTall": 1,
+        "note": "Collision/placement occupies one 64x64 tile; sprite artwork extends above the cell."
+      },
+      "renderLayer": "props",
+      "ySort": true,
+      "highlightAnimation": {
+        "files": [
+          "Gold Stone 1_Highlight.png",
+          "Gold Stones.aseprite"
+        ],
+        "type": "animation",
+        "frameSize": {
+          "width": 128,
+          "height": 128
+        },
+        "frameCount": 6,
+        "frameDurationMs": 100,
+        "fps": 10,
+        "loopDurationMs": 600,
+        "layout": "horizontal-strip",
+        "sheetSize": {
+          "width": 768,
+          "height": 128
+        },
+        "loop": true,
+        "frames": [
+          {
+            "index": 0,
+            "x": 0,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "index": 1,
+            "x": 128,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "index": 2,
+            "x": 256,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "index": 3,
+            "x": 384,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "index": 4,
+            "x": 512,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "index": 5,
+            "x": 640,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          }
+        ],
+        "usage": {
+          "summary": "Selection/highlight ring for Gold Stone 1. Loop at 10 fps when the stone is targeted.",
+          "note": "Draw above the base stone sprite on the props layer. Gameplay pickup semantics deferred to backlog."
+        }
+      },
+      "usage": {
+        "summary": "Gold resource stone variant 1. Static 128x128 prop.",
+        "note": "Anchor bottom-centre on walkable land. Pair with highlightAnimation for editor selection feedback."
+      },
+      "placementRules": {
+        "onLandOnly": {
+          "rule": "Place only on land cells (elevation >= 0). Never on water, cliff-face cells, cliff-base cells, or stair/ramp cells.",
+          "appliesTo": "Walkable grass at any elevation tier.",
+          "doNotApply": "Water (elevation -1), cells below south-facing cliffs, ramp landing/top cells."
+        },
+        "preferInteriorGrass": {
+          "rule": "Prefer fully-surrounded centre grass (autotile piece 5, mask 1111) for consistent scatter with other props.",
+          "preferredPieceId": 5
+        }
+      }
+    },
+    {
+      "id": "goldStone2",
+      "name": "Gold Stone 2",
+      "files": [
+        "Gold Stone 2.png",
+        "Gold Stones.aseprite"
+      ],
+      "type": "static-sprite",
+      "sourceFile": "Gold Stones.aseprite",
+      "size": {
+        "width": 128,
+        "height": 128
+      },
+      "anchor": {
+        "x": 64,
+        "y": 128,
+        "note": "Bottom-centre of the sprite meets the ground tile."
+      },
+      "footprint": {
+        "tilesWide": 1,
+        "tilesTall": 1,
+        "note": "Collision/placement occupies one 64x64 tile; sprite artwork extends above the cell."
+      },
+      "renderLayer": "props",
+      "ySort": true,
+      "highlightAnimation": {
+        "files": [
+          "Gold Stone 2_Highlight.png",
+          "Gold Stones.aseprite"
+        ],
+        "type": "animation",
+        "frameSize": {
+          "width": 128,
+          "height": 128
+        },
+        "frameCount": 6,
+        "frameDurationMs": 100,
+        "fps": 10,
+        "loopDurationMs": 600,
+        "layout": "horizontal-strip",
+        "sheetSize": {
+          "width": 768,
+          "height": 128
+        },
+        "loop": true,
+        "frames": [
+          {
+            "index": 0,
+            "x": 0,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "index": 1,
+            "x": 128,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "index": 2,
+            "x": 256,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "index": 3,
+            "x": 384,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "index": 4,
+            "x": 512,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "index": 5,
+            "x": 640,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          }
+        ],
+        "usage": {
+          "summary": "Selection/highlight ring for Gold Stone 2. Loop at 10 fps when the stone is targeted.",
+          "note": "Draw above the base stone sprite on the props layer. Gameplay pickup semantics deferred to backlog."
+        }
+      },
+      "usage": {
+        "summary": "Gold resource stone variant 2. Static 128x128 prop.",
+        "note": "Anchor bottom-centre on walkable land. Pair with highlightAnimation for editor selection feedback."
+      },
+      "placementRules": {
+        "onLandOnly": {
+          "rule": "Place only on land cells (elevation >= 0). Never on water, cliff-face cells, cliff-base cells, or stair/ramp cells.",
+          "appliesTo": "Walkable grass at any elevation tier.",
+          "doNotApply": "Water (elevation -1), cells below south-facing cliffs, ramp landing/top cells."
+        },
+        "preferInteriorGrass": {
+          "rule": "Prefer fully-surrounded centre grass (autotile piece 5, mask 1111) for consistent scatter with other props.",
+          "preferredPieceId": 5
+        }
+      }
+    },
+    {
+      "id": "goldStone3",
+      "name": "Gold Stone 3",
+      "files": [
+        "Gold Stone 3.png",
+        "Gold Stones.aseprite"
+      ],
+      "type": "static-sprite",
+      "sourceFile": "Gold Stones.aseprite",
+      "size": {
+        "width": 128,
+        "height": 128
+      },
+      "anchor": {
+        "x": 64,
+        "y": 128,
+        "note": "Bottom-centre of the sprite meets the ground tile."
+      },
+      "footprint": {
+        "tilesWide": 1,
+        "tilesTall": 1,
+        "note": "Collision/placement occupies one 64x64 tile; sprite artwork extends above the cell."
+      },
+      "renderLayer": "props",
+      "ySort": true,
+      "highlightAnimation": {
+        "files": [
+          "Gold Stone 3_Highlight.png",
+          "Gold Stones.aseprite"
+        ],
+        "type": "animation",
+        "frameSize": {
+          "width": 128,
+          "height": 128
+        },
+        "frameCount": 6,
+        "frameDurationMs": 100,
+        "fps": 10,
+        "loopDurationMs": 600,
+        "layout": "horizontal-strip",
+        "sheetSize": {
+          "width": 768,
+          "height": 128
+        },
+        "loop": true,
+        "frames": [
+          {
+            "index": 0,
+            "x": 0,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "index": 1,
+            "x": 128,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "index": 2,
+            "x": 256,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "index": 3,
+            "x": 384,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "index": 4,
+            "x": 512,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "index": 5,
+            "x": 640,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          }
+        ],
+        "usage": {
+          "summary": "Selection/highlight ring for Gold Stone 3. Loop at 10 fps when the stone is targeted.",
+          "note": "Draw above the base stone sprite on the props layer. Gameplay pickup semantics deferred to backlog."
+        }
+      },
+      "usage": {
+        "summary": "Gold resource stone variant 3. Static 128x128 prop.",
+        "note": "Anchor bottom-centre on walkable land. Pair with highlightAnimation for editor selection feedback."
+      },
+      "placementRules": {
+        "onLandOnly": {
+          "rule": "Place only on land cells (elevation >= 0). Never on water, cliff-face cells, cliff-base cells, or stair/ramp cells.",
+          "appliesTo": "Walkable grass at any elevation tier.",
+          "doNotApply": "Water (elevation -1), cells below south-facing cliffs, ramp landing/top cells."
+        },
+        "preferInteriorGrass": {
+          "rule": "Prefer fully-surrounded centre grass (autotile piece 5, mask 1111) for consistent scatter with other props.",
+          "preferredPieceId": 5
+        }
+      }
+    },
+    {
+      "id": "goldStone4",
+      "name": "Gold Stone 4",
+      "files": [
+        "Gold Stone 4.png",
+        "Gold Stones.aseprite"
+      ],
+      "type": "static-sprite",
+      "sourceFile": "Gold Stones.aseprite",
+      "size": {
+        "width": 128,
+        "height": 128
+      },
+      "anchor": {
+        "x": 64,
+        "y": 128,
+        "note": "Bottom-centre of the sprite meets the ground tile."
+      },
+      "footprint": {
+        "tilesWide": 1,
+        "tilesTall": 1,
+        "note": "Collision/placement occupies one 64x64 tile; sprite artwork extends above the cell."
+      },
+      "renderLayer": "props",
+      "ySort": true,
+      "highlightAnimation": {
+        "files": [
+          "Gold Stone 4_Highlight.png",
+          "Gold Stones.aseprite"
+        ],
+        "type": "animation",
+        "frameSize": {
+          "width": 128,
+          "height": 128
+        },
+        "frameCount": 6,
+        "frameDurationMs": 100,
+        "fps": 10,
+        "loopDurationMs": 600,
+        "layout": "horizontal-strip",
+        "sheetSize": {
+          "width": 768,
+          "height": 128
+        },
+        "loop": true,
+        "frames": [
+          {
+            "index": 0,
+            "x": 0,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "index": 1,
+            "x": 128,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "index": 2,
+            "x": 256,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "index": 3,
+            "x": 384,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "index": 4,
+            "x": 512,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "index": 5,
+            "x": 640,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          }
+        ],
+        "usage": {
+          "summary": "Selection/highlight ring for Gold Stone 4. Loop at 10 fps when the stone is targeted.",
+          "note": "Draw above the base stone sprite on the props layer. Gameplay pickup semantics deferred to backlog."
+        }
+      },
+      "usage": {
+        "summary": "Gold resource stone variant 4. Static 128x128 prop.",
+        "note": "Anchor bottom-centre on walkable land. Pair with highlightAnimation for editor selection feedback."
+      },
+      "placementRules": {
+        "onLandOnly": {
+          "rule": "Place only on land cells (elevation >= 0). Never on water, cliff-face cells, cliff-base cells, or stair/ramp cells.",
+          "appliesTo": "Walkable grass at any elevation tier.",
+          "doNotApply": "Water (elevation -1), cells below south-facing cliffs, ramp landing/top cells."
+        },
+        "preferInteriorGrass": {
+          "rule": "Prefer fully-surrounded centre grass (autotile piece 5, mask 1111) for consistent scatter with other props.",
+          "preferredPieceId": 5
+        }
+      }
+    },
+    {
+      "id": "goldStone5",
+      "name": "Gold Stone 5",
+      "files": [
+        "Gold Stone 5.png",
+        "Gold Stones.aseprite"
+      ],
+      "type": "static-sprite",
+      "sourceFile": "Gold Stones.aseprite",
+      "size": {
+        "width": 128,
+        "height": 128
+      },
+      "anchor": {
+        "x": 64,
+        "y": 128,
+        "note": "Bottom-centre of the sprite meets the ground tile."
+      },
+      "footprint": {
+        "tilesWide": 1,
+        "tilesTall": 1,
+        "note": "Collision/placement occupies one 64x64 tile; sprite artwork extends above the cell."
+      },
+      "renderLayer": "props",
+      "ySort": true,
+      "highlightAnimation": {
+        "files": [
+          "Gold Stone 5_Highlight.png",
+          "Gold Stones.aseprite"
+        ],
+        "type": "animation",
+        "frameSize": {
+          "width": 128,
+          "height": 128
+        },
+        "frameCount": 6,
+        "frameDurationMs": 100,
+        "fps": 10,
+        "loopDurationMs": 600,
+        "layout": "horizontal-strip",
+        "sheetSize": {
+          "width": 768,
+          "height": 128
+        },
+        "loop": true,
+        "frames": [
+          {
+            "index": 0,
+            "x": 0,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "index": 1,
+            "x": 128,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "index": 2,
+            "x": 256,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "index": 3,
+            "x": 384,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "index": 4,
+            "x": 512,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "index": 5,
+            "x": 640,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          }
+        ],
+        "usage": {
+          "summary": "Selection/highlight ring for Gold Stone 5. Loop at 10 fps when the stone is targeted.",
+          "note": "Draw above the base stone sprite on the props layer. Gameplay pickup semantics deferred to backlog."
+        }
+      },
+      "usage": {
+        "summary": "Gold resource stone variant 5. Static 128x128 prop.",
+        "note": "Anchor bottom-centre on walkable land. Pair with highlightAnimation for editor selection feedback."
+      },
+      "placementRules": {
+        "onLandOnly": {
+          "rule": "Place only on land cells (elevation >= 0). Never on water, cliff-face cells, cliff-base cells, or stair/ramp cells.",
+          "appliesTo": "Walkable grass at any elevation tier.",
+          "doNotApply": "Water (elevation -1), cells below south-facing cliffs, ramp landing/top cells."
+        },
+        "preferInteriorGrass": {
+          "rule": "Prefer fully-surrounded centre grass (autotile piece 5, mask 1111) for consistent scatter with other props.",
+          "preferredPieceId": 5
+        }
+      }
+    },
+    {
+      "id": "goldStone6",
+      "name": "Gold Stone 6",
+      "files": [
+        "Gold Stone 6.png",
+        "Gold Stones.aseprite"
+      ],
+      "type": "static-sprite",
+      "sourceFile": "Gold Stones.aseprite",
+      "size": {
+        "width": 128,
+        "height": 128
+      },
+      "anchor": {
+        "x": 64,
+        "y": 128,
+        "note": "Bottom-centre of the sprite meets the ground tile."
+      },
+      "footprint": {
+        "tilesWide": 1,
+        "tilesTall": 1,
+        "note": "Collision/placement occupies one 64x64 tile; sprite artwork extends above the cell."
+      },
+      "renderLayer": "props",
+      "ySort": true,
+      "highlightAnimation": {
+        "files": [
+          "Gold Stone 6_Highlight.png",
+          "Gold Stones.aseprite"
+        ],
+        "type": "animation",
+        "frameSize": {
+          "width": 128,
+          "height": 128
+        },
+        "frameCount": 6,
+        "frameDurationMs": 100,
+        "fps": 10,
+        "loopDurationMs": 600,
+        "layout": "horizontal-strip",
+        "sheetSize": {
+          "width": 768,
+          "height": 128
+        },
+        "loop": true,
+        "frames": [
+          {
+            "index": 0,
+            "x": 0,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "index": 1,
+            "x": 128,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "index": 2,
+            "x": 256,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "index": 3,
+            "x": 384,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "index": 4,
+            "x": 512,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          },
+          {
+            "index": 5,
+            "x": 640,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          }
+        ],
+        "usage": {
+          "summary": "Selection/highlight ring for Gold Stone 6. Loop at 10 fps when the stone is targeted.",
+          "note": "Draw above the base stone sprite on the props layer. Gameplay pickup semantics deferred to backlog."
+        }
+      },
+      "usage": {
+        "summary": "Gold resource stone variant 6. Static 128x128 prop.",
+        "note": "Anchor bottom-centre on walkable land. Pair with highlightAnimation for editor selection feedback."
+      },
+      "placementRules": {
+        "onLandOnly": {
+          "rule": "Place only on land cells (elevation >= 0). Never on water, cliff-face cells, cliff-base cells, or stair/ramp cells.",
+          "appliesTo": "Walkable grass at any elevation tier.",
+          "doNotApply": "Water (elevation -1), cells below south-facing cliffs, ramp landing/top cells."
+        },
+        "preferInteriorGrass": {
+          "rule": "Prefer fully-surrounded centre grass (autotile piece 5, mask 1111) for consistent scatter with other props.",
+          "preferredPieceId": 5
+        }
+      }
+    }
+  ]
+}
