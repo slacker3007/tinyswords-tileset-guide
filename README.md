@@ -1,6 +1,6 @@
 # Tiny Swords Tileset Guide
 
-**Version 0.0.0.4**
+**Version 0.0.0.5**
 
 A machine-readable usage guide for the **Tiny Swords** terrain tileset
 (`Terrain/Tileset`), designed so an IDE / map tool can place tiles correctly and
@@ -22,6 +22,16 @@ trees/bushes through full-pack coverage).
 | `Tilemap_color1_guide_ids.png` | The same sheet annotated with the **semantic piece IDs** used in `guide.json` (e.g. `FG 5` centre grass, `EG 21` water cliff, `ST 25` ramp top) and each tile's role. |
 | `example-map.png` | A rendered 200×200 example map produced from `guide.json` (random multi-elevation terrain with a left-side sea, valley water channels, frequent access ramps, and scattered props including trees, bushes, rocks, gold stones, sheep, and water rocks). |
 | `example-preview.gif` / `example-preview.webp` | Animated 28×18-tile crop of the example map. 48-frame loop at 10 fps showing trees, bushes, water foam, water rocks, gold stones, and sheep all cycling through their full Aseprite animations. The WebP is lossless and small; the GIF is included for renderers that cannot display animated WebP. |
+| `elevation-examples.html` | Interactive 200×200 elevation showcase and bug-hunt tool: landmark terrain (pyramid, volcano, atoll, moated keep, wall, mountain, terraces, labyrinth, archipelago, stepped staircase, flush lakes), pan/zoom viewport, toggles for grid/elevation/tile IDs/labels/shadows, and an in-page adjacency + step violation checker. |
+| `elevation-understanding.svg` | Reference diagram for elevation tiers, cliffs, ramps, and stacked rendering. |
+
+## Running the demo
+
+1. Download the **Tiny Swords** pack from [Pixel Frog](https://pixelfrog-assets.itch.io/tiny-swords) and copy the terrain sheet PNGs into `Terrain/Tileset/` (`Tilemap_color1.png` … `Tilemap_color5.png`, `Water Foam.png`, `Water Background color.png`, `Shadow.png`). These files are not included in this repo (see Credits & license).
+2. Serve this repo root: `python -m http.server 8000`
+3. Open `http://localhost:8000/elevation-examples.html`
+
+Turn on **Labels** and **Violations** to inspect landmarks and rule breaches. Drag or WASD to pan; scroll wheel zooms.
 
 ## Animated preview
 
@@ -83,6 +93,11 @@ map renderer scatters ground rocks on interior grass and water rocks on open wat
 `0.0.0.4` — resource semantics (visuals): gold stones with highlight animations and
 sheep idle/move/grass states; example map renderer scatters gold stones and sheep on
 interior grass.
+
+`0.0.0.5` — interactive elevation showcase: `elevation-examples.html` with a 200×200
+bug-hunt map (landmarks, flush lakes at any tier, omnidirectional autopad, terraced
+staircase with open ramp access, stacked-tier rendering, pan/zoom UI, and in-page
+violation checker against `piece_adjacency_allowed.json`).
 
 **Next:** `0.0.1.0` — road overlay complete ([ROADMAP.md](ROADMAP.md)).
 

@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tiny Swords — Elevation Examples (100x100)</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  html, body { overflow: hidden; }
+  body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: #11161d; color: #e6edf3; }
+  header { padding: 10px 14px; border-bottom: 1px solid #232c37; }
+  h1 { font-size: 15px; margin: 0 0 8px; font-weight: 600; }
+  .controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; font-size: 12px; }
+  .controls label { display: flex; gap: 5px; align-items: center; color: #cbd5e1; }
+  .controls input[type="number"] { width: 52px; background: #0d1117; color: #e6edf3; border: 1px solid #2c3744; border-radius: 5px; padding: 4px 6px; }
+  .controls input[type="text"] { width: 280px; background: #0d1117; color: #e6edf3; border: 1px solid #2c3744; border-radius: 5px; padding: 4px 6px; font-size: 11px; }
+  .controls button { background: #1b232e; color: #cbd5e1; border: 1px solid #2c3744; border-radius: 5px; padding: 5px 10px; cursor: pointer; font-size: 12px; }
+  .controls button.primary { background: #2563eb; border-color: #2563eb; color: #fff; }
+  .controls button:hover { filter: brightness(1.12); }
+  .toggles { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px; }
+  .toggles label { font-size: 11px; gap: 4px; }
+  .layout { display: flex; align-items: flex-start; }
+  .stage-wrap {
+    width: 1920px; height: 1080px; flex: none;
+    overflow: hidden; position: relative; background: #1a212b;
+    cursor: grab;
+    outline: none;
+    scrollbar-width: none;
+  }
+  .stage-wrap::-webkit-scrollbar { width: 0; height: 0; display: none; }
+  .stage-wrap.panning { cursor: grabbing; }
+  .stage-inner { position: relative; display: inline-block; }
+  #map, #overlay { display: block; image-rendering: pixelated; box-shadow: 0 0 0 1px #2c3744; }
+  #overlay { position: absolute; left: 0; top: 0; pointer-events: none; }
+  .hit-layer { position: absolute; left: 0; top: 0; cursor: inherit; }
+  #panel { width: 320px; height: 1080px; border-left: 1px solid #232c37; overflow: auto; padding: 10px; font-size: 11px; background: #0d1117; }
+  #panel h2 { font-size: 12px; margin: 0 0 8px; color: #93a4b8; }
+  #violations { list-style: none; padding: 0; margin: 0; max-height: 40vh; overflow: auto; }
+  #violations li { padding: 4px 0; border-bottom: 1px solid #232c37; line-height: 1.4; }
+  #violations .adj { color: #f87171; }
+  #violations .step { color: #fb923c; }
+  #tooltip {
+    position: fixed; display: none; z-index: 20; pointer-events: none;
+    background: #1b232e; border: 1px solid #3d4f63; border-radius: 6px;
+    padding: 8px 10px; font-size: 11px; line-height: 1.5; max-width: 340px;
+    box-shadow: 0 4px 20px rgba(0,0,0,.5);
+  }
+  #msg {
+    position: fixed; left: 50%; top: 50%; transform: translate(-50%,-50%);
+    max-width: 560px; padding: 18px 22px; background: #1b232e; border: 1px solid #b5552c;
+    border-radius: 10px; font-size: 13px; line-height: 1.6; display: none; z-index: 30;
+  }
+  #msg code { background:#0d1117; padding:2px 6px; border-radius:4px; }
+  .note { color: #8b98a8; font-size: 10px; margin-top: 6px; line-height: 1.4; }
+  #meta { color: #8b98a8; font-size: 11px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Tiny Swords — 200x200 Terrain Showcase</h1>
+  <div class="controls">
+    <label>Zoom <input id="zoom" type="number" min="1" max="64" value="64" /><span style="color:#8b98a8;margin-left:2px">px/tile</span></label>
+    <button id="oneToOne" title="1:1 native pixels (64px tiles)">1:1</button>
+    <button id="reload" class="primary">Reload</button>
+    <span id="meta"></span>
+  </div>
+  <div class="controls">
+    <label>Assets <input id="assets" type="text" value="Terrain" /></label>
+    <label>Adjacency <input id="adjPath" type="text" value="Terrain/Tileset/piece_adjacency_allowed.json" /></label>
+  </div>
+  <div class="toggles">
+    <label><input type="checkbox" id="togGrid" /> Grid</label>
+    <label><input type="checkbox" id="togElev" /> Elevation</label>
+    <label><input type="checkbox" id="togIds" /> Tile IDs</label>
+    <label><input type="checkbox" id="togLabels" /> Labels</label>
+    <label><input type="checkbox" id="togShadow" /> Shadows</label>
+    <label><input type="checkbox" id="togViol" /> Violations</label>
+  </div>
+  <p class="note">200x200 bug-hunt map: pyramid, volcano, atoll, moated keep, great wall, mountain, terraces, labyrinth, archipelago, stepped cliffs, flush lakes at lvl2/3/4, sea + bay. All tiers 1–4, ramps, narrow strips. Turn on <b>Labels</b> and <b>Violations</b> to inspect. <b>Drag/WASD to pan; scroll wheel zooms</b> (opens at 1:1, overlays off). Serve from repo root: <code>python -m http.server 8000</code> then open <code>/elevation-examples.html</code>.</p>
+</header>
+
+<div class="layout">
+  <div class="stage-wrap" id="stageWrap" tabindex="0">
+    <div class="stage-inner" id="stageInner">
+      <canvas id="map"></canvas>
+      <canvas id="overlay"></canvas>
+      <div class="hit-layer" id="hitLayer"></div>
+    </div>
+  </div>
+  <div id="panel">
+    <h2>Violations <span id="violCount"></span></h2>
+    <ul id="violations"></ul>
+    <h2 style="margin-top:14px">Scenarios</h2>
+    <ul id="scenarioList" style="padding-left:16px;margin:0;line-height:1.5"></ul>
+  </div>
+</div>
+<div id="tooltip"></div>
+<div id="msg"></div>
+
+<script>
+"use strict";
+
+const W = 200, H = 200, TILE = 64;
+const WATER = -1;
+
+// mask NESW -> piece id (flatGround lookup)
+const FLAT_LOOKUP = {
+  0:16, 1:12, 2:13, 3:3, 4:10, 5:11, 6:1, 7:2,
+  8:15, 9:9, 10:14, 11:6, 12:7, 13:8, 14:4, 15:5,
+};
+const IMPLICIT_LIP = { 4:10, 5:11, 1:12, 0:16 };
+
+const FLAT = {
+  1:[0,0],2:[64,0],3:[128,0],4:[0,64],5:[64,64],6:[128,64],
+  7:[0,128],8:[64,128],9:[128,128],10:[0,192],11:[64,192],12:[128,192],
+  13:[192,0],14:[192,64],15:[192,128],16:[192,192],
+};
+const ELEV = {
+  1:[320,0],2:[384,0],3:[448,0],4:[320,64],5:[384,64],6:[448,64],
+  7:[320,128],8:[384,128],9:[448,128],10:[320,192],11:[384,192],12:[448,192],
+  13:[512,0],14:[512,64],15:[512,128],16:[512,192],
+  17:[320,256],18:[384,256],19:[448,256],20:[512,256],
+  21:[320,320],22:[384,320],23:[448,320],24:[512,320],
+};
+const STAIRS = {
+  25:[0,256], 28:[192,256], 29:[0,320], 32:[192,320],
+};
+const LIP_SUB = { 7:10, 8:11, 9:12, 15:16 };
+
+const ASSET_FILES = {
+  color1:"Tileset/Tilemap_color1.png", color2:"Tileset/Tilemap_color2.png",
+  color3:"Tileset/Tilemap_color3.png", color4:"Tileset/Tilemap_color4.png",
+  color5:"Tileset/Tilemap_color5.png",
+  foam:"Tileset/Water Foam.png", water:"Tileset/Water Background color.png",
+  shadow:"Tileset/Shadow.png",
+};
+
+// ---------------------------------------------------------------------------
+// Geometry helpers
+// ---------------------------------------------------------------------------
+function rawIdFromCoords(sx, sy) { return (sy / 64) * 9 + (sx / 64) + 1; }
+function rawIdFromRegion(region, semanticId) {
+  const m = region === "flat" ? FLAT : region === "elev" ? ELEV : STAIRS;
+  const c = m[semanticId];
+  return c ? rawIdFromCoords(c[0], c[1]) : null;
+}
+function regionLabel(r) { return r === "flat" ? "FG" : r === "elev" ? "EG" : "ST"; }
+
+function inB(x, y) { return x >= 0 && y >= 0 && x < W && y < H; }
+function get(g, x, y) { return inB(x, y) ? g[y][x] : WATER; }
+
+function sameGroup(nv, e) {
+  // Equal-or-higher land = same autotile group; water/off-map (-1) and lower land stay OTHER.
+  return nv >= e ? 1 : 0;
+}
+function mask4(g, x, y) {
+  const e = g[y][x];
+  const N = sameGroup(get(g, x, y - 1), e);
+  const E = sameGroup(get(g, x + 1, y), e);
+  const S = sameGroup(get(g, x, y + 1), e);
+  const Ww = sameGroup(get(g, x - 1, y), e);
+  return (N << 3) | (E << 2) | (S << 1) | Ww;
+}
+function maskStr(m) {
+  return "" + ((m>>3)&1) + ((m>>2)&1) + ((m>>1)&1) + (m&1);
+}
+function eightWater(g, x, y) {
+  for (let dy = -1; dy <= 1; dy++)
+    for (let dx = -1; dx <= 1; dx++) {
+      if (!dx && !dy) continue;
+      if (get(g, x + dx, y + dy) < 0) return true;
+    }
+  return false;
+}
+
+// ---------------------------------------------------------------------------
+// Scenario authoring
+// ---------------------------------------------------------------------------
+const CARD_W = 20, CARD_H = 25;
+
+function emptyGrid(fill = 1) {
+  return Array.from({ length: H }, () => new Array(W).fill(fill));
+}
+function cardOrigin(col, row) { return { ox: col * CARD_W, oy: row * CARD_H }; }
+
+function fillRect(g, x, y, w, h, v) {
+  for (let j = y; j < y + h; j++)
+    for (let i = x; i < x + w; i++)
+      if (inB(i, j)) g[j][i] = v;
+}
+function stampDisc(g, cx, cy, r, lvl) {
+  for (let j = cy - r; j <= cy + r; j++)
+    for (let i = cx - r; i <= cx + r; i++)
+      if (inB(i, j) && Math.hypot(i - cx, j - cy) <= r)
+        g[j][i] = Math.max(g[j][i], lvl);
+}
+function stampLake(g, cx, cy, r) {
+  for (let j = cy - r; j <= cy + r; j++)
+    for (let i = cx - r; i <= cx + r; i++)
+      if (inB(i, j) && Math.hypot(i - cx, j - cy) <= r) g[j][i] = WATER;
+}
+
+// Rain-filled basin: raise a flush rim at `tier`, then fill the interior with water.
+function carveLake(g, cx, cy, r, tier) {
+  stampDisc(g, cx, cy, r + 2, tier);
+  stampLake(g, cx, cy, r);
+}
+
+function autopad(g) {
+  let changed = true, guard = 0;
+  while (changed && guard++ < 800) {
+    changed = false;
+    for (let y = 0; y < H; y++)
+      for (let x = 0; x < W; x++) {
+        const e = g[y][x];
+        if (e <= 0) continue;
+        for (const [dx, dy] of [[0, -1], [1, 0], [0, 1], [-1, 0]]) {
+          const nx = x + dx, ny = y + dy;
+          const n = get(g, nx, ny);
+          if (n >= 0 && n < e - 1) { g[ny][nx] = e - 1; changed = true; }
+        }
+      }
+  }
+}
+
+const SCENARIOS = [];
+const RAMPS = [];
+const LABELS = [];
+
+function scenario(id, col, row, title, fn) {
+  const { ox, oy } = cardOrigin(col, row);
+  SCENARIOS.push({ id, title, ox, oy });
+  LABELS.push({ x: ox + 1, y: oy + 1, text: title });
+  fn(ox, oy);
+}
+
+function pyramid(g, x, y, sz) {
+  for (let t = 1; t <= 4; t++) {
+    const i = (t - 1) * Math.floor(sz / 8);
+    fillRect(g, x + i, y + i, sz - 2 * i, sz - 2 * i, t);
+  }
+}
+function volcano(g, cx, cy) {
+  for (let t = 1; t <= 4; t++) stampDisc(g, cx, cy, 12 - (t - 1) * 3, t);
+  carveLake(g, cx, cy, 2, 4);
+}
+function atoll(g, cx, cy) {
+  stampDisc(g, cx, cy, 8, 1);
+  stampLake(g, cx, cy, 4);
+}
+function moatKeep(g, cx, cy) {
+  fillRect(g, cx - 7, cy - 7, 14, 14, 1);
+  for (let j = -9; j <= 9; j++)
+    for (let i = -9; i <= 9; i++)
+      if (Math.max(Math.abs(i), Math.abs(j)) === 9 && inB(cx + i, cy + j))
+        g[cy + j][cx + i] = WATER;
+  fillRect(g, cx - 4, cy - 4, 8, 8, 3);
+}
+function wall(g, x, y, len) { fillRect(g, x, y, len, 3, 2); }
+function mountain(g, cx, cy) {
+  stampDisc(g, cx, cy, 16, 1);
+  stampDisc(g, cx, cy, 11, 2);
+  stampDisc(g, cx, cy, 7, 3);
+  stampDisc(g, cx, cy, 3, 4);
+}
+function terraces(g, x, y) {
+  for (let t = 1; t <= 4; t++) fillRect(g, x, y + (t - 1) * 6, 40, 6, t);
+  carveLake(g, x + 6, y + 2, 1, 1);
+  carveLake(g, x + 6, y + 8, 1, 2);
+  carveLake(g, x + 6, y + 14, 1, 3);
+  carveLake(g, x + 6, y + 20, 1, 4);
+}
+function maze(g, x, y) {
+  for (let i = 0; i < 8; i++) fillRect(g, x + i * 4, y, 2, 30, 2);
+  for (let j = 0; j < 4; j++) fillRect(g, x, y + j * 8, 30, 2, 2);
+}
+function archipelago(g, cx, cy) {
+  fillRect(g, cx - 15, cy - 15, 30, 30, WATER);
+  for (const [dx, dy] of [[-8, -6], [0, 0], [7, 5], [-5, 8], [9, -9], [3, -7]])
+    g[cy + dy][cx + dx] = 1;
+}
+function elevLake(g, x, y, tier) {
+  fillRect(g, x, y, 14, 14, tier);
+  carveLake(g, x + 7, y + 7, 2, tier);
+}
+function staircase(g, x, y, w, bh) {
+  fillRect(g, x, y + 2 * bh, w, bh, 2);
+  fillRect(g, x + 4, y + bh, w - 4, bh, 3);
+  fillRect(g, x + 8, y, w - 8, bh, 4);
+}
+
+function buildWorld() {
+  const g = emptyGrid(1);
+  RAMPS.length = 0;
+  LABELS.length = 0;
+  SCENARIOS.length = 0;
+
+  fillRect(g, 0, 0, 10, H, WATER);
+  fillRect(g, 0, 150, 40, 50, WATER);
+  pyramid(g, 30, 25, 32);
+  volcano(g, 120, 40);
+  atoll(g, 20, 165);
+  moatKeep(g, 40, 110);
+  wall(g, 60, 95, 110);
+  mountain(g, 175, 45);
+  terraces(g, 150, 15);
+  maze(g, 120, 150);
+  archipelago(g, 80, 175);
+  staircase(g, 92, 52, 24, 4);
+  elevLake(g, 84, 104, 2);
+  elevLake(g, 165, 116, 3);
+  autopad(g);
+
+  RAMPS.push({ side: "L", x: 33, y: 30, label: "pyramid up" });
+  RAMPS.push({ side: "R", x: 124, y: 41, label: "volcano up" });
+  RAMPS.push({ side: "L", x: 163, y: 46, label: "mountain up" });
+  RAMPS.push({ side: "L", x: 60, y: 98, label: "wall up" });
+  RAMPS.push({ side: "L", x: 150, y: 39, label: "terrace up" });
+  RAMPS.push({ side: "L", x: 92, y: 64, label: "stair 1->2" });
+  RAMPS.push({ side: "L", x: 96, y: 60, label: "stair 2->3" });
+  RAMPS.push({ side: "L", x: 100, y: 56, label: "stair 3->4" });
+
+  const mark = (x, y, title) => {
+    SCENARIOS.push({ id: SCENARIOS.length, title, ox: x, oy: y });
+    LABELS.push({ x, y, text: title });
+  };
+  mark(30, 25, "Great Pyramid");
+  mark(120, 40, "Volcano + crater lake");
+  mark(20, 165, "Atoll lagoon");
+  mark(40, 110, "Moated keep");
+  mark(60, 95, "Great Wall");
+  mark(175, 45, "Mountain");
+  mark(150, 15, "Terraced ponds");
+  mark(120, 150, "Labyrinth");
+  mark(80, 175, "Archipelago");
+  mark(92, 52, "Stepped staircase");
+  mark(84, 104, "Lake (lvl2)");
+  mark(165, 116, "Lake (lvl3)");
+  mark(2, 2, "Sea");
+
+  return g;
+}
+
+// ---------------------------------------------------------------------------
+// Render state: per-cell records + overrides
+// ---------------------------------------------------------------------------
+let cellRecord = []; // [y][x] = { elevation, region, semanticId, rawId, layer }
+let cornerOverride = new Map(); // "x,y" -> { region, semanticId }
+let cliffOverride = new Map();
+
+function key(x, y) { return x + "," + y; }
+
+function makeRecord(g, x, y, region, semanticId, layer = "ground") {
+  const coords = region === "flat" ? FLAT[semanticId]
+    : region === "elev" ? ELEV[semanticId]
+    : STAIRS[semanticId];
+  const rec = {
+    elevation: g[y][x],
+    region, semanticId,
+    rawId: coords ? rawIdFromCoords(coords[0], coords[1]) : null,
+    sheetX: coords ? coords[0] : 0,
+    sheetY: coords ? coords[1] : 0,
+    layer,
+  };
+  cellRecord[y][x] = rec;
+  return rec;
+}
+
+function pickGroundPiece(g, x, y) {
+  const e = g[y][x];
+  const m = mask4(g, x, y);
+  let piece = FLAT_LOOKUP[m];
+  const region = e === 0 ? "flat" : "elev";
+
+  if (e > 0) {
+    const s = get(g, x, y + 1);
+    const north = get(g, x, y - 1);
+    if (s < e && s !== WATER) {
+      if (north === WATER && LIP_SUB[piece]) piece = LIP_SUB[piece];
+      else if (IMPLICIT_LIP[m] !== undefined) piece = IMPLICIT_LIP[m];
+    }
+  }
+  const ov = cornerOverride.get(key(x, y));
+  if (ov) return { region: ov.region, piece: ov.semanticId };
+  return { region, piece };
+}
+
+// Per-level sameness mask for stacked-tier rendering: a neighbour counts as
+// "same" at level L when its elevation is >= L (i.e. it is land at this tier).
+function maskAtLevel(g, x, y, L) {
+  const N = get(g, x, y - 1) >= L ? 1 : 0;
+  const E = get(g, x + 1, y) >= L ? 1 : 0;
+  const S = get(g, x, y + 1) >= L ? 1 : 0;
+  const Ww = get(g, x - 1, y) >= L ? 1 : 0;
+  return (N << 3) | (E << 2) | (S << 1) | Ww;
+}
+// Underlay tile for a lower tier L beneath a higher cell, so the higher tile's
+// transparent rim reveals the tier below (not water). Mirrors pickGroundPiece's
+// lip logic but keyed on L instead of the cell's own elevation.
+function pickPieceAtLevel(g, x, y, L) {
+  const m = maskAtLevel(g, x, y, L);
+  let piece = FLAT_LOOKUP[m];
+  const region = L === 0 ? "flat" : "elev";
+  if (L > 0) {
+    const south = get(g, x, y + 1);
+    const north = get(g, x, y - 1);
+    if (south < L && south !== WATER) {
+      if (north < L && LIP_SUB[piece]) piece = LIP_SUB[piece];
+      else if (IMPLICIT_LIP[m] !== undefined) piece = IMPLICIT_LIP[m];
+    }
+  }
+  return { region, piece };
+}
+
+function cliffVariant(g, x, y) {
+  const e = g[y][x];
+  // Rounded END only where the neighbor is lower/open ground; against
+  // same-or-higher land a wall continues, so the face butts flush.
+  const openL = get(g, x - 1, y) < e;
+  const openR = get(g, x + 1, y) < e;
+  if (openL && openR) return "narrow";
+  if (openL && !openR) return "left";
+  if (!openL && openR) return "right";
+  return "mid";
+}
+
+function prepareRampOverrides(g, ramps) {
+  cornerOverride.clear();
+  cliffOverride.clear();
+  for (const r of ramps) {
+    const { side, x: sx, y: sy } = r;
+    const cornerX = side === "L" ? sx + 1 : sx - 1;
+    const cornerY = sy - 1;
+    if (!inB(cornerX, cornerY) || g[cornerY][cornerX] !== g[sy][sx] + 1) continue;
+    cornerOverride.set(key(cornerX, cornerY), { region: "elev", semanticId: 5 });
+    if (inB(cornerX, sy)) {
+      const piece = side === "L" ? 17 : 19;
+      cliffOverride.set(key(cornerX, sy), { region: "elev", semanticId: 18, replaces: piece });
+    }
+  }
+}
+
+function sheetFor(A, e) {
+  return e <= 0 ? A.color1 : A[`color${Math.min(5, e + 1)}`];
+}
+
+function renderMap(canvas, g, zoom, A, drawShadow) {
+  cellRecord = Array.from({ length: H }, () => new Array(W).fill(null));
+  prepareRampOverrides(g, RAMPS);
+
+  canvas.width = W * TILE;
+  canvas.height = H * TILE;
+  canvas.style.width = (W * zoom) + "px";
+  canvas.style.height = (H * zoom) + "px";
+  const ctx = canvas.getContext("2d");
+  ctx.imageSmoothingEnabled = false;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // 1 water
+  for (let y = 0; y < H; y++)
+    for (let x = 0; x < W; x++)
+      ctx.drawImage(A.water, x * TILE, y * TILE, TILE, TILE);
+
+  // 2 foam
+  const FOAM_FRAME = 8, FS = 192;
+  for (let y = 0; y < H; y++)
+    for (let x = 0; x < W; x++) {
+      if (g[y][x] < 0) continue;
+      if (!eightWater(g, x, y)) continue;
+      ctx.drawImage(A.foam, FOAM_FRAME * FS, 0, FS, FS, x * TILE - TILE, y * TILE - TILE, FS, FS);
+    }
+
+  // 3 ground tops (stacked tiers: for each cell draw every tier from level 0 up
+  // to its elevation, so a higher tile's transparent rim reveals the tier below
+  // instead of the water background). The cell's own (top) tile is recorded.
+  let maxE = 0;
+  for (let y = 0; y < H; y++)
+    for (let x = 0; x < W; x++)
+      if (g[y][x] > maxE) maxE = g[y][x];
+
+  for (let L = 0; L <= maxE; L++) {
+    const sheet = sheetFor(A, L);
+    for (let y = 0; y < H; y++)
+      for (let x = 0; x < W; x++) {
+        const e = g[y][x];
+        if (e < L) continue; // cell is not land at this tier
+        const top = e === L;
+        const { region, piece } = top ? pickGroundPiece(g, x, y) : pickPieceAtLevel(g, x, y, L);
+        const co = (region === "flat" ? FLAT : ELEV)[piece];
+        ctx.drawImage(sheet, co[0], co[1], TILE, TILE, x * TILE, y * TILE, TILE, TILE);
+        if (top) makeRecord(g, x, y, region, piece, "ground");
+      }
+  }
+
+  // 4 cliff bases
+  for (let y = 0; y < H - 1; y++)
+    for (let x = 0; x < W; x++) {
+      const e = g[y][x];
+      if (e <= 0) continue;
+      const s = get(g, x, y + 1);
+      if (s >= e) continue;
+      if (s === WATER) continue; // flush lake/sea: no vertical cliff into water
+      let variant = cliffVariant(g, x, y);
+      const ids = { left:17, mid:18, right:19, narrow:20 };
+      let semId = ids[variant];
+      const cov = cliffOverride.get(key(x, y + 1));
+      if (cov && (semId === 17 || semId === 19)) semId = 18;
+      const co = ELEV[semId];
+      const sheet = sheetFor(A, e);
+      ctx.drawImage(sheet, co[0], co[1], TILE, TILE, x * TILE, (y + 1) * TILE, TILE, TILE);
+      if (inB(x, y + 1)) makeRecord(g, x, y + 1, "elev", semId, "cliff");
+    }
+
+  // 5 ramps
+  for (const r of RAMPS) {
+    const { side, x: sx, y: sy } = r;
+    const landing = g[sy][sx];
+    const platform = landing + 1;
+    const cornerX = side === "L" ? sx + 1 : sx - 1;
+    if (get(g, cornerX, sy - 1) !== platform) continue;
+    const topId = side === "L" ? 25 : 28;
+    const botId = side === "L" ? 29 : 32;
+    const topY = sy - 1;
+    if (inB(sx, topY) && get(g, sx, sy - 2) === platform) {
+      const bd = ELEV[18];
+      const sheet = sheetFor(A, platform);
+      ctx.drawImage(sheet, bd[0], bd[1], TILE, TILE, sx * TILE, topY * TILE, TILE, TILE);
+      makeRecord(g, sx, topY, "elev", 18, "ramp-backdrop");
+    }
+    if (inB(sx, topY)) {
+      const tc = STAIRS[topId];
+      const sheet = sheetFor(A, platform);
+      ctx.drawImage(sheet, tc[0], tc[1], TILE, TILE, sx * TILE, topY * TILE, TILE, TILE);
+      makeRecord(g, sx, topY, "stairs", topId, "ramp-top");
+    }
+    if (inB(sx, sy)) {
+      const bc = STAIRS[botId];
+      // Whole ramp is drawn from the elevated (platform) colour sheet so the
+      // top and bottom read as one continuous piece in a single tier colour.
+      const sheet = sheetFor(A, platform);
+      ctx.drawImage(sheet, bc[0], bc[1], TILE, TILE, sx * TILE, sy * TILE, TILE, TILE);
+      makeRecord(g, sx, sy, "stairs", botId, "ramp-bottom");
+    }
+  }
+
+  // 7 shadows
+  if (drawShadow) {
+    for (let y = 0; y < H - 2; y++)
+      for (let x = 0; x < W; x++) {
+        const e = g[y][x];
+        if (e < 1) continue;
+        const s = get(g, x, y + 1), ss = get(g, x, y + 2);
+        if (s < 0 || ss < 0) continue;
+        if (s >= e) continue;
+        ctx.drawImage(A.shadow, x * TILE, (y + 1) * TILE, TILE, TILE);
+      }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Overlays + violations
+// ---------------------------------------------------------------------------
+const DX8 = [-1,0,1,-1,1,-1,0,1];
+const DY8 = [-1,-1,-1,0,0,1,1,1];
+const N8LABEL = ["NW","N","NE","W","E","SW","S","SE"];
+
+function neighborToken(g, x, y, adjAllowed) {
+  if (!inB(x, y) || g[y][x] < 0) return "water";
+  const rec = cellRecord[y][x];
+  if (!rec || rec.rawId == null) return "water";
+  return rec.rawId;
+}
+
+function checkViolations(g, adjAllowed) {
+  const list = [];
+  const flaggedAdj = new Set();
+  const flaggedStep = new Set();
+
+  for (let y = 0; y < H; y++)
+    for (let x = 0; x < W; x++) {
+      const e = g[y][x];
+      if (e >= 0) {
+        const s = get(g, x, y + 1);
+        if (s >= 0 && e - s !== 1 && s < e) {
+          list.push({ type: "step", x, y, msg: `(${x},${y}) el${e} south el${s} drop=${e-s}` });
+          flaggedStep.add(key(x, y));
+        }
+      }
+      const rec = cellRecord[y][x];
+      if (!rec || rec.rawId == null) continue;
+      const allowed = adjAllowed[String(rec.rawId)];
+      if (!allowed) continue;
+      const allowSet = new Set(allowed.map(v => v === "water" ? "water" : Number(v)));
+
+      for (let i = 0; i < 8; i++) {
+        const nx = x + DX8[i], ny = y + DY8[i];
+        const tok = neighborToken(g, nx, ny, adjAllowed);
+        const tokVal = tok === "water" ? "water" : tok;
+        if (!allowSet.has(tokVal)) {
+          list.push({
+            type: "adj",
+            x, y, nx, ny,
+            msg: `(${x},${y}) #${rec.rawId} ${N8LABEL[i]} -> ${tokVal === "water" ? "water" : "#"+tokVal} not in allowed`,
+          });
+          flaggedAdj.add(key(x, y));
+          if (inB(nx, ny)) flaggedAdj.add(key(nx, ny));
+        }
+      }
+    }
+  return { list, flaggedAdj, flaggedStep };
+}
+
+function renderOverlay(overlay, g, zoom, violations, flaggedAdj, flaggedStep) {
+  overlay.width = W * zoom;
+  overlay.height = H * zoom;
+  const ctx = overlay.getContext("2d");
+  ctx.clearRect(0, 0, overlay.width, overlay.height);
+
+  const showGrid = document.getElementById("togGrid").checked;
+  const showElev = document.getElementById("togElev").checked;
+  const showIds = document.getElementById("togIds").checked;
+  const showLabels = document.getElementById("togLabels").checked;
+  const showViol = document.getElementById("togViol").checked;
+
+  if (showGrid) {
+    ctx.strokeStyle = "rgba(255,255,255,0.12)";
+    ctx.lineWidth = 1;
+    for (let x = 0; x <= W; x++) {
+      ctx.beginPath(); ctx.moveTo(x * zoom, 0); ctx.lineTo(x * zoom, H * zoom); ctx.stroke();
+    }
+    for (let y = 0; y <= H; y++) {
+      ctx.beginPath(); ctx.moveTo(0, y * zoom); ctx.lineTo(W * zoom, y * zoom); ctx.stroke();
+    }
+  }
+
+  if (showViol) {
+    for (const k of flaggedStep) {
+      const [x, y] = k.split(",").map(Number);
+      ctx.fillStyle = "rgba(251,146,60,0.4)";
+      ctx.fillRect(x * zoom, y * zoom, zoom, zoom);
+      ctx.strokeStyle = "#fb923c";
+      ctx.lineWidth = 2;
+      ctx.strokeRect(x * zoom + 1, y * zoom + 1, zoom - 2, zoom - 2);
+    }
+    for (const k of flaggedAdj) {
+      const [x, y] = k.split(",").map(Number);
+      ctx.fillStyle = "rgba(248,113,113,0.35)";
+      ctx.fillRect(x * zoom, y * zoom, zoom, zoom);
+      ctx.strokeStyle = "#f87171";
+      ctx.lineWidth = 2;
+      ctx.strokeRect(x * zoom + 1, y * zoom + 1, zoom - 2, zoom - 2);
+    }
+  }
+
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  const fs = Math.max(7, Math.floor(zoom * 0.55));
+
+  for (let y = 0; y < H; y++)
+    for (let x = 0; x < W; x++) {
+      const cx = x * zoom + zoom / 2;
+      const cy = y * zoom + zoom / 2;
+      const rec = cellRecord[y][x];
+      if (showElev && g[y][x] >= 0) {
+        ctx.fillStyle = "rgba(0,0,0,0.55)";
+        ctx.fillRect(x * zoom, y * zoom, zoom, zoom * 0.45);
+        ctx.fillStyle = "#fde68a";
+        ctx.font = `bold ${fs}px monospace`;
+        ctx.fillText(String(g[y][x]), cx, y * zoom + zoom * 0.22);
+      }
+      if (showIds && rec && rec.rawId != null) {
+        ctx.fillStyle = "#a5f3fc";
+        ctx.font = `${fs}px monospace`;
+        ctx.fillText("#" + rec.rawId, cx, cy - (showElev ? 2 : 0));
+        ctx.fillStyle = "#86efac";
+        ctx.font = `${Math.max(6, fs - 1)}px monospace`;
+        ctx.fillText(regionLabel(rec.region) + rec.semanticId, cx, cy + fs);
+      }
+    }
+
+  if (showLabels) {
+    ctx.textAlign = "left";
+    ctx.textBaseline = "top";
+    for (const lb of LABELS) {
+      ctx.fillStyle = "rgba(0,0,0,0.7)";
+      const tx = lb.x * zoom, ty = lb.y * zoom;
+      ctx.fillRect(tx, ty, lb.text.length * 6.2 + 8, 14);
+      ctx.fillStyle = "#f8fafc";
+      ctx.font = "bold 11px system-ui";
+      ctx.fillText(lb.text, tx + 4, ty + 1);
+    }
+  }
+}
+
+function updateViolationPanel(violData) {
+  const ul = document.getElementById("violations");
+  const { list } = violData;
+  const adjN = list.filter(v => v.type === "adj").length;
+  const stepN = list.filter(v => v.type === "step").length;
+  document.getElementById("violCount").textContent = `(${list.length}: ${adjN} adj, ${stepN} step)`;
+  ul.innerHTML = "";
+  const cap = 200;
+  for (let i = 0; i < Math.min(cap, list.length); i++) {
+    const li = document.createElement("li");
+    li.className = list[i].type;
+    li.textContent = list[i].msg;
+    ul.appendChild(li);
+  }
+  if (list.length > cap) {
+    const li = document.createElement("li");
+    li.textContent = `... and ${list.length - cap} more`;
+    ul.appendChild(li);
+  }
+}
+
+function updateScenarioList() {
+  const ul = document.getElementById("scenarioList");
+  ul.innerHTML = SCENARIOS.map(s =>
+    `<li><strong>${s.title}</strong> @ (${s.ox},${s.oy})</li>`
+  ).join("");
+}
+
+// ---------------------------------------------------------------------------
+// Tooltip
+// ---------------------------------------------------------------------------
+function showTooltip(ev, g, zoom) {
+  const inner = document.getElementById("stageInner");
+  const rect = inner.getBoundingClientRect();
+  // rect is live and already reflects the current pan/scroll, so no scroll offset is added.
+  const px = ev.clientX - rect.left;
+  const py = ev.clientY - rect.top;
+  const x = Math.floor(px / zoom);
+  const y = Math.floor(py / zoom);
+  const tip = document.getElementById("tooltip");
+  if (!inB(x, y)) { tip.style.display = "none"; return; }
+
+  const rec = cellRecord[y][x];
+  const m = g[y][x] >= 0 ? mask4(g, x, y) : null;
+  let html = `<strong>(${x}, ${y})</strong> elev=${g[y][x]}<br>`;
+  if (rec && rec.rawId != null) {
+    html += `tile: raw <b>#${rec.rawId}</b> ${regionLabel(rec.region)}${rec.semanticId} [${rec.layer}]<br>`;
+  } else {
+    html += `tile: <i>none / water fill</i><br>`;
+  }
+  if (m !== null) html += `mask NESW: <b>${maskStr(m)}</b> (${m})<br>`;
+  html += `<table style="border-collapse:collapse;font-size:10px;margin-top:4px">`;
+  html += `<tr><td></td><td>N</td><td></td></tr>`;
+  const nb = [
+    [-1,-1,"NW"], [0,-1,"N"], [1,-1,"NE"],
+    [-1,0,"W"], [null,null,"."], [1,0,"E"],
+    [-1,1,"SW"], [0,1,"S"], [1,1,"SE"],
+  ];
+  for (let row = 0; row < 3; row++) {
+    html += "<tr>";
+    for (let col = 0; col < 3; col++) {
+      const item = nb[row * 3 + col];
+      if (item[0] === null) { html += `<td style="padding:2px 4px;text-align:center">@</td>`; continue; }
+      const nx = x + item[0], ny = y + item[1];
+      const nrec = inB(nx, ny) ? cellRecord[ny][nx] : null;
+      const nel = inB(nx, ny) ? g[ny][nx] : "oob";
+      const nid = !inB(nx, ny) || g[ny][nx] < 0 ? "w" : (nrec && nrec.rawId != null ? "#" + nrec.rawId : "-");
+      html += `<td style="padding:2px 4px;text-align:center" title="el ${nel}">${item[2]}:${nid}</td>`;
+    }
+    html += "</tr>";
+  }
+  html += `</table>`;
+  tip.innerHTML = html;
+  tip.style.display = "block";
+  tip.style.left = (ev.clientX + 14) + "px";
+  tip.style.top = (ev.clientY + 14) + "px";
+}
+
+// ---------------------------------------------------------------------------
+// Loading + main
+// ---------------------------------------------------------------------------
+function loadImage(src) {
+  return new Promise((res, rej) => {
+    const img = new Image();
+    img.onload = () => res(img);
+    img.onerror = () => rej(src);
+    img.src = src;
+  });
+}
+
+let ASSETS = null, assetBase = null, ADJ_ALLOWED = null;
+
+async function ensureAssets(base) {
+  if (ASSETS && assetBase === base) return ASSETS;
+  const prefix = base.replace(/\/+$/, "") + "/";
+  const entries = await Promise.all(
+    Object.entries(ASSET_FILES).map(async ([k, f]) => [k, await loadImage(prefix + encodeURI(f))])
+  );
+  ASSETS = Object.fromEntries(entries);
+  assetBase = base;
+  return ASSETS;
+}
+
+async function loadAdjacency(path) {
+  const r = await fetch(path);
+  if (!r.ok) throw new Error(path);
+  return r.json();
+}
+
+function showMsg(html) {
+  const m = document.getElementById("msg");
+  m.innerHTML = html;
+  m.style.display = html ? "block" : "none";
+}
+
+let WORLD = null;
+let lastViol = { list: [], flaggedAdj: new Set(), flaggedStep: new Set() };
+
+async function run() {
+  const zoom = Math.max(1, Math.min(64, parseInt(document.getElementById("zoom").value) || 6));
+  const base = document.getElementById("assets").value.trim();
+  const adjPath = document.getElementById("adjPath").value.trim();
+  showMsg("");
+
+  let A, adj;
+  try {
+    [A, adj] = await Promise.all([ensureAssets(base), loadAdjacency(adjPath)]);
+    ADJ_ALLOWED = adj;
+  } catch (e) {
+    showMsg(`<strong>Load failed:</strong> <code>${e}</code><br><br>Run <code>python -m http.server 8000</code> from the repo root.`);
+    return;
+  }
+
+  WORLD = buildWorld();
+  const drawShadow = document.getElementById("togShadow").checked;
+  const mapCanvas = document.getElementById("map");
+  renderMap(mapCanvas, WORLD, zoom, A, drawShadow);
+
+  lastViol = checkViolations(WORLD, ADJ_ALLOWED);
+  updateViolationPanel(lastViol);
+  updateScenarioList();
+
+  const overlay = document.getElementById("overlay");
+  overlay.style.width = mapCanvas.style.width;
+  overlay.style.height = mapCanvas.style.height;
+  renderOverlay(overlay, WORLD, zoom, lastViol.list, lastViol.flaggedAdj, lastViol.flaggedStep);
+
+  const hit = document.getElementById("hitLayer");
+  hit.style.width = mapCanvas.style.width;
+  hit.style.height = mapCanvas.style.height;
+
+  document.getElementById("meta").textContent =
+    `${W}x${H} | ${SCENARIOS.length} scenarios | ${RAMPS.length} ramps | zoom ${zoom}px/tile`;
+}
+
+function refreshOverlays() {
+  if (!WORLD) return;
+  const zoom = Math.max(1, Math.min(64, parseInt(document.getElementById("zoom").value) || 6));
+  const drawShadow = document.getElementById("togShadow").checked;
+  if (ASSETS) renderMap(document.getElementById("map"), WORLD, zoom, ASSETS, drawShadow);
+  lastViol = checkViolations(WORLD, ADJ_ALLOWED || {});
+  updateViolationPanel(lastViol);
+  const overlay = document.getElementById("overlay");
+  const mapCanvas = document.getElementById("map");
+  overlay.style.width = mapCanvas.style.width;
+  overlay.style.height = mapCanvas.style.height;
+  renderOverlay(overlay, WORLD, zoom, lastViol.list, lastViol.flaggedAdj, lastViol.flaggedStep);
+}
+
+document.getElementById("reload").onclick = run;
+document.getElementById("oneToOne").onclick = () => {
+  document.getElementById("zoom").value = TILE; // 64 px/tile = native 1:1
+  if (WORLD && ASSETS) refreshOverlays();
+  else run();
+};
+document.getElementById("zoom").addEventListener("change", () => {
+  if (WORLD && ASSETS) refreshOverlays();
+});
+document.querySelectorAll(".toggles input").forEach(el => {
+  el.addEventListener("change", () => {
+    if (el.id === "togShadow" && WORLD && ASSETS) refreshOverlays();
+    else if (WORLD) {
+      const zoom = parseInt(document.getElementById("zoom").value) || 6;
+      renderOverlay(document.getElementById("overlay"), WORLD, zoom, lastViol.list, lastViol.flaggedAdj, lastViol.flaggedStep);
+    }
+  });
+});
+
+const hitLayer = document.getElementById("hitLayer");
+const stageWrap = document.getElementById("stageWrap");
+
+// Drag-to-pan across the locked 1920x1080 viewport.
+let panning = false, panStartX = 0, panStartY = 0, panScrollX = 0, panScrollY = 0;
+hitLayer.addEventListener("mousedown", ev => {
+  if (ev.button !== 0) return;
+  panning = true;
+  panStartX = ev.clientX; panStartY = ev.clientY;
+  panScrollX = stageWrap.scrollLeft; panScrollY = stageWrap.scrollTop;
+  stageWrap.classList.add("panning");
+  document.getElementById("tooltip").style.display = "none";
+  ev.preventDefault();
+});
+window.addEventListener("mousemove", ev => {
+  if (!panning) return;
+  stageWrap.scrollLeft = panScrollX - (ev.clientX - panStartX);
+  stageWrap.scrollTop = panScrollY - (ev.clientY - panStartY);
+});
+window.addEventListener("mouseup", () => {
+  if (!panning) return;
+  panning = false;
+  stageWrap.classList.remove("panning");
+});
+
+// Lightweight zoom: the map canvas is drawn at native resolution and only
+// CSS-scaled, so changing zoom just restyles and redraws the overlay.
+function applyZoom(zoom) {
+  const map = document.getElementById("map");
+  map.style.width = (W * zoom) + "px";
+  map.style.height = (H * zoom) + "px";
+  const overlay = document.getElementById("overlay");
+  overlay.style.width = map.style.width;
+  overlay.style.height = map.style.height;
+  const hit = document.getElementById("hitLayer");
+  hit.style.width = map.style.width;
+  hit.style.height = map.style.height;
+  if (lastViol) renderOverlay(overlay, WORLD, zoom, lastViol.list, lastViol.flaggedAdj, lastViol.flaggedStep);
+  document.getElementById("meta").textContent =
+    `${W}x${H} | ${SCENARIOS.length} scenarios | ${RAMPS.length} ramps | zoom ${zoom}px/tile`;
+}
+
+// Wheel-to-zoom, anchored on the cursor (overflow hidden, so drive scroll).
+stageWrap.addEventListener("wheel", ev => {
+  ev.preventDefault();
+  if (!WORLD) return;
+  const zoomInput = document.getElementById("zoom");
+  const oldZoom = Math.max(1, Math.min(64, parseInt(zoomInput.value) || 6));
+  let newZoom = Math.round(oldZoom * (ev.deltaY < 0 ? 1.2 : 1 / 1.2));
+  if (newZoom === oldZoom) newZoom = oldZoom + (ev.deltaY < 0 ? 1 : -1);
+  newZoom = Math.max(1, Math.min(64, newZoom));
+  if (newZoom === oldZoom) return;
+  const rect = stageWrap.getBoundingClientRect();
+  const cx = ev.clientX - rect.left, cy = ev.clientY - rect.top;
+  const wx = (stageWrap.scrollLeft + cx) / oldZoom;
+  const wy = (stageWrap.scrollTop + cy) / oldZoom;
+  zoomInput.value = newZoom;
+  applyZoom(newZoom);
+  stageWrap.scrollLeft = wx * newZoom - cx;
+  stageWrap.scrollTop = wy * newZoom - cy;
+}, { passive: false });
+
+// WASD keyboard panning. A rAF loop reads a held-key set so movement is
+// smooth and diagonals combine; ignored while typing in a form field.
+const heldKeys = new Set();
+const WASD_SPEED = 18; // px per frame
+function isTypingTarget(t) {
+  return t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable);
+}
+window.addEventListener("keydown", ev => {
+  if (isTypingTarget(ev.target)) return;
+  const k = ev.key.toLowerCase();
+  if (k === "w" || k === "a" || k === "s" || k === "d") {
+    heldKeys.add(k);
+    ev.preventDefault();
+  }
+});
+window.addEventListener("keyup", ev => {
+  heldKeys.delete(ev.key.toLowerCase());
+});
+window.addEventListener("blur", () => heldKeys.clear());
+function wasdTick() {
+  if (heldKeys.size) {
+    let dx = 0, dy = 0;
+    if (heldKeys.has("a")) dx -= WASD_SPEED;
+    if (heldKeys.has("d")) dx += WASD_SPEED;
+    if (heldKeys.has("w")) dy -= WASD_SPEED;
+    if (heldKeys.has("s")) dy += WASD_SPEED;
+    if (dx) stageWrap.scrollLeft += dx;
+    if (dy) stageWrap.scrollTop += dy;
+  }
+  requestAnimationFrame(wasdTick);
+}
+requestAnimationFrame(wasdTick);
+
+hitLayer.addEventListener("mousemove", ev => {
+  if (!WORLD || panning) return;
+  const zoom = parseInt(document.getElementById("zoom").value) || 6;
+  showTooltip(ev, WORLD, zoom);
+});
+hitLayer.addEventListener("mouseleave", () => {
+  document.getElementById("tooltip").style.display = "none";
+});
+
+run();
+</script>
+</body>
+</html>
