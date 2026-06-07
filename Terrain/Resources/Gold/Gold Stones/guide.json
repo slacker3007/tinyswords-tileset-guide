@@ -2,12 +2,7 @@
   "folder": "TinySwords/Terrain/Resources/Gold/Gold Stones",
   "tileSize": 64,
   "description": "Gold resource stone props for the Tiny Swords asset pack. Each variant is a static 128x128 sprite with a separate 6-frame highlight animation sheet from Gold Stones.aseprite.",
-  "roadmapVersion": "0.0.0.4",
-  "nextMilestone": {
-    "version": "0.0.1.0",
-    "title": "Road overlay complete",
-    "roadmapFile": "ROADMAP.md"
-  },
+  "guideVersion": "0.0.0.7",
   "renderLayers": {
     "props": {
       "order": "After ground tiles, cliff bases, and stair ramps; before top overlays (clouds, etc.).",

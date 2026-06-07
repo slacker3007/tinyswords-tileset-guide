@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Tiny Swords — Elevation Examples (100x100)</title>
+<title>Tiny Swords — Example World (200x200)</title>
 <style>
   :root { color-scheme: dark; }
   * { box-sizing: border-box; }
@@ -58,7 +58,7 @@
 </head>
 <body>
 <header>
-  <h1>Tiny Swords — 200x200 Terrain Showcase</h1>
+  <h1>Tiny Swords — 200x200 Example World</h1>
   <div class="controls">
     <label>Zoom <input id="zoom" type="number" min="1" max="64" value="64" /><span style="color:#8b98a8;margin-left:2px">px/tile</span></label>
     <button id="oneToOne" title="1:1 native pixels (64px tiles)">1:1</button>
@@ -83,8 +83,10 @@
     <label><input type="checkbox" id="togRocks" checked /> Rocks</label>
     <label><input type="checkbox" id="togWaterRocks" checked /> Water Rocks</label>
     <label><input type="checkbox" id="togSheep" checked /> Sheep</label>
+    <label><input type="checkbox" id="togTowns" checked /> Towns</label>
+    <label><input type="checkbox" id="togUnits" checked /> Units</label>
   </div>
-  <p class="note">200x200 bug-hunt map: pyramid, volcano, atoll, moated keep, great wall, mountain, terraces, labyrinth, archipelago, stepped cliffs, flush lakes at lvl2/3/4, sea + bay. All tiers 1–4, ramps, narrow strips. Turn on <b>Labels</b> and <b>Violations</b> to inspect. <b>Drag/WASD to pan; scroll wheel zooms</b> (opens at 1:1, overlays off). Serve from repo root: <code>python -m http.server 8000</code> then open <code>/elevation-examples.html</code>.</p>
+  <p class="note">200x200 organic example world: a noise-shaped island coastline, scattered inland lakes, stepped hills/plateaus (tiers 1–4) linked by auto-placed ramps, clustered forests, four widely-spaced faction-colored towns (Blue/Red/Purple/Yellow) with roaming units, and roaming sheep. Toggle prop categories or <b>Pause</b> the animation. Turn on <b>Violations</b> to verify the terrain stays rule-valid. <b>Drag/WASD to pan; scroll wheel zooms</b> (opens at 1:1, overlays off). Serve from repo root: <code>python -m http.server 8000</code> then open <code>/elevation-examples.html</code>.</p>
 </header>
 
 <div class="layout">
@@ -159,6 +161,38 @@ const ASSET_FILES = {
   stump3:"Resources/Wood/Trees/Stump 3.png", stump4:"Resources/Wood/Trees/Stump 4.png",
 };
 
+const TOWN_COLORS = ["Blue", "Red", "Purple", "Yellow"];
+const BUILDING_TYPES = [
+  { id:"Castle",    file:"Castle.png",    w:320, h:256, fw:5, fh:3 },
+  { id:"Monastery", file:"Monastery.png", w:192, h:320, fw:3, fh:2 },
+  { id:"Barracks",  file:"Barracks.png",  w:192, h:256, fw:3, fh:2 },
+  { id:"Archery",   file:"Archery.png",   w:192, h:256, fw:3, fh:2 },
+  { id:"Tower",     file:"Tower.png",     w:128, h:256, fw:2, fh:1 },
+  { id:"House1",    file:"House1.png",    w:128, h:192, fw:2, fh:1 },
+  { id:"House2",    file:"House2.png",    w:128, h:192, fw:2, fh:1 },
+  { id:"House3",    file:"House3.png",    w:128, h:192, fw:2, fh:1 },
+];
+for (const color of TOWN_COLORS)
+  for (const bt of BUILDING_TYPES) {
+    const key = `b_${color}_${bt.id}`;
+    ASSET_FILES[key] = `../Buildings/${color} Buildings/${bt.file}`;
+  }
+
+const UNIT_TYPES = [
+  { id:"Warrior", size:192, idle:"Warrior_Idle.png", iF:8, run:"Warrior_Run.png", rF:6 },
+  { id:"Archer",  size:192, idle:"Archer_Idle.png",  iF:6, run:"Archer_Run.png",  rF:4 },
+  { id:"Pawn",    size:192, idle:"Pawn_Idle.png",    iF:8, run:"Pawn_Run.png",    rF:6 },
+  { id:"Monk",    size:192, idle:"Idle.png",         iF:6, run:"Run.png",         rF:4 },
+  { id:"Lancer",  size:320, idle:"Lancer_Idle.png",  iF:12, run:"Lancer_Run.png", rF:6 },
+];
+for (const color of TOWN_COLORS)
+  for (const ut of UNIT_TYPES) {
+    const idleKey = `u_${color}_${ut.id}_idle`;
+    const runKey = `u_${color}_${ut.id}_run`;
+    ASSET_FILES[idleKey] = `../Units/${color} Units/${ut.id}/${ut.idle}`;
+    ASSET_FILES[runKey] = `../Units/${color} Units/${ut.id}/${ut.run}`;
+  }
+
 const ANIM_MS = 100;
 const PROP_DEFS = {
   bush1:  { assetKey:"bush1",  frameW:128, frameH:128, frameCount:8,  frameDurationMs:ANIM_MS, anchorX:64, anchorY:128, animated:true },
@@ -185,14 +219,37 @@ const PROP_DEFS = {
   stump3: { assetKey:"stump3", frameW:192, frameH:256, frameCount:1,  frameDurationMs:ANIM_MS, anchorX:96, anchorY:256, animated:false },
   stump4: { assetKey:"stump4", frameW:192, frameH:256, frameCount:1,  frameDurationMs:ANIM_MS, anchorX:96, anchorY:256, animated:false },
 };
+for (const color of TOWN_COLORS)
+  for (const bt of BUILDING_TYPES) {
+    const key = `b_${color}_${bt.id}`;
+    PROP_DEFS[key] = {
+      assetKey: key, frameW: bt.w, frameH: bt.h, frameCount: 1,
+      frameDurationMs: ANIM_MS, anchorX: bt.w / 2, anchorY: bt.h,
+      animated: false, fw: bt.fw, fh: bt.fh,
+    };
+  }
+for (const color of TOWN_COLORS)
+  for (const ut of UNIT_TYPES) {
+    const idleKey = `u_${color}_${ut.id}_idle`;
+    const runKey = `u_${color}_${ut.id}_run`;
+    PROP_DEFS[idleKey] = {
+      assetKey: idleKey, frameW: ut.size, frameH: ut.size, frameCount: ut.iF,
+      frameDurationMs: ANIM_MS, anchorX: ut.size / 2, anchorY: ut.size, animated: true,
+    };
+    PROP_DEFS[runKey] = {
+      assetKey: runKey, frameW: ut.size, frameH: ut.size, frameCount: ut.rF,
+      frameDurationMs: ANIM_MS, anchorX: ut.size / 2, anchorY: ut.size, animated: true,
+    };
+  }
 
 const PROP_SEED = 0xDEC0FCAE;
-const PROP_TOGGLE_IDS = new Set(["togTrees", "togBushes", "togRocks", "togWaterRocks", "togSheep"]);
+const TOWN_SEED = 0x70A11;
+const PROP_TOGGLE_IDS = new Set(["togTrees", "togBushes", "togRocks", "togWaterRocks", "togSheep", "togTowns", "togUnits"]);
 let PROPS = [];
 let blockedCells = new Set();
-let layerEnabled = { trees:true, bushes:true, rocks:true, waterrocks:true, sheep:true };
+let layerEnabled = { trees:true, bushes:true, rocks:true, waterrocks:true, sheep:true, buildings:true, units:true };
 
-const BLOCKED_CATS = new Set(["trees", "bushes", "rocks"]);
+const BLOCKED_CATS = new Set(["trees", "bushes", "rocks", "buildings"]);
 
 function readLayerEnabled() {
   layerEnabled.trees = document.getElementById("togTrees").checked;
@@ -200,6 +257,8 @@ function readLayerEnabled() {
   layerEnabled.rocks = document.getElementById("togRocks").checked;
   layerEnabled.waterrocks = document.getElementById("togWaterRocks").checked;
   layerEnabled.sheep = document.getElementById("togSheep").checked;
+  layerEnabled.buildings = document.getElementById("togTowns").checked;
+  layerEnabled.units = document.getElementById("togUnits").checked;
 }
 
 function mulberry32(a) {
@@ -209,6 +268,38 @@ function mulberry32(a) {
     t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
+}
+
+// Deterministic lattice hash -> [0,1).
+function hash2(ix, iy, seed) {
+  let h = (seed ^ Math.imul(ix | 0, 374761393) ^ Math.imul(iy | 0, 668265263)) | 0;
+  h = Math.imul(h ^ (h >>> 13), 1274126177);
+  h ^= h >>> 16;
+  return (h >>> 0) / 4294967296;
+}
+
+// Smooth value noise sampler. Returns (x,y) -> [0,1) with bilinear smoothstep
+// interpolation over a `period`-tile lattice.
+function makeValueNoise(seed, period) {
+  return (x, y) => {
+    const gx = x / period, gy = y / period;
+    const x0 = Math.floor(gx), y0 = Math.floor(gy);
+    const fx = gx - x0, fy = gy - y0;
+    const sx = fx * fx * (3 - 2 * fx);
+    const sy = fy * fy * (3 - 2 * fy);
+    const v00 = hash2(x0, y0, seed), v10 = hash2(x0 + 1, y0, seed);
+    const v01 = hash2(x0, y0 + 1, seed), v11 = hash2(x0 + 1, y0 + 1, seed);
+    const a = v00 + (v10 - v00) * sx;
+    const b = v01 + (v11 - v01) * sx;
+    return a + (b - a) * sy;
+  };
+}
+
+// Two-octave fractal value noise for more organic shapes.
+function makeFbm(seed, period) {
+  const n1 = makeValueNoise(seed, period);
+  const n2 = makeValueNoise(seed ^ 0x9E3779B9, Math.max(2, period >> 1));
+  return (x, y) => n1(x, y) * 0.65 + n2(x, y) * 0.35;
 }
 
 function openWater(g, x, y) {
@@ -230,33 +321,173 @@ function pickVariant(rng, ids) {
   return ids[Math.floor(rng() * ids.length)];
 }
 
+function buildingCells(ax, ay, fw, fh) {
+  const cells = [];
+  const x0 = ax - Math.floor(fw / 2);
+  const y0 = ay - fh + 1;
+  for (let cy = y0; cy <= ay; cy++)
+    for (let cx = x0; cx < x0 + fw; cx++)
+      cells.push([cx, cy]);
+  return cells;
+}
+
+function buildable(g, ax, ay, fw, fh, blocked, margin = 1) {
+  if (!inB(ax, ay)) return false;
+  const elev = g[ay][ax];
+  if (elev < 1) return false;
+  for (const [cx, cy] of buildingCells(ax, ay, fw, fh)) {
+    for (let dy = -margin; dy <= margin; dy++)
+      for (let dx = -margin; dx <= margin; dx++) {
+        const nx = cx + dx, ny = cy + dy;
+        if (!inB(nx, ny)) return false;
+        if (g[ny][nx] < 1 || g[ny][nx] !== elev) return false;
+        const rec = cellRecord[ny][nx];
+        if (!rec || rec.layer !== "ground") return false;
+        if (blocked.has(`${nx},${ny}`)) return false;
+      }
+  }
+  return true;
+}
+
+function placeBuilding(g, ax, ay, def, blocked, list) {
+  if (!buildable(g, ax, ay, def.fw, def.fh, blocked)) return false;
+  for (const [cx, cy] of buildingCells(ax, ay, def.fw, def.fh))
+    blocked.add(`${cx},${cy}`);
+  list.push({ x: ax, y: ay, cat: "buildings", def });
+  return true;
+}
+
+function spiralNear(cx, cy, maxR) {
+  const pts = [];
+  for (let r = 0; r <= maxR; r++)
+    for (let dy = -r; dy <= r; dy++)
+      for (let dx = -r; dx <= r; dx++)
+        if (Math.max(Math.abs(dx), Math.abs(dy)) === r)
+          pts.push([cx + dx, cy + dy]);
+  return pts;
+}
+
+const TOWN_TARGETS = [
+  { color: "Blue",   tx: 55,  ty: 55 },
+  { color: "Red",    tx: 145, ty: 55 },
+  { color: "Purple", tx: 55,  ty: 145 },
+  { color: "Yellow", tx: 145, ty: 145 },
+];
+
+const TOWN_COMPOSITION = [
+  { id: "Monastery", count: 1 },
+  { id: "Barracks",  count: 1 },
+  { id: "Archery",   count: 1 },
+  { id: "Tower",     count: 2 },
+  { id: "House1",    count: 3 },
+  { id: "House2",    count: 2 },
+  { id: "House3",    count: 2 },
+];
+
+const UNIT_COMPOSITION = [
+  { id: "Warrior", count: 3 },
+  { id: "Archer",  count: 2 },
+  { id: "Pawn",    count: 3 },
+  { id: "Monk",    count: 1 },
+  { id: "Lancer",  count: 2 },
+];
+
+function spawnTownUnits(g, color, homeX, homeY, castleElev, blocked, list, rng) {
+  for (const entry of UNIT_COMPOSITION) {
+    const idleKey = `u_${color}_${entry.id}_idle`;
+    const runKey = `u_${color}_${entry.id}_run`;
+    const idleDef = PROP_DEFS[idleKey];
+    for (let n = 0; n < entry.count; n++) {
+      for (let t = 0; t < 60; t++) {
+        const ox = Math.floor(rng() * 21) - 10;
+        const oy = Math.floor(rng() * 21) - 10;
+        const ux = homeX + ox, uy = homeY + oy;
+        if (!inB(ux, uy) || g[uy][ux] !== castleElev) continue;
+        if (!sheepWalkable(g, ux, uy, null, blocked)) continue;
+        const startMove = rng() < 0.4;
+        const runDef = PROP_DEFS[runKey];
+        list.push({
+          x: ux, y: uy, cat: "units", color, unitType: entry.id,
+          idleKey, runKey,
+          def: startMove ? runDef : idleDef,
+          state: startMove ? "move" : "idle",
+          fx: ux, fy: uy, homeX, homeY,
+          facing: rng() < 0.5 ? 1 : -1,
+          heading: rng() * Math.PI * 2,
+          stateUntil: animClock + 800 + rng() * 4000,
+          phaseMs: rng() * (startMove ? runDef : idleDef).frameCount * ANIM_MS,
+          wanderRadius: 9,
+        });
+        break;
+      }
+    }
+  }
+}
+
+function generateTowns(g, blocked, list) {
+  const rng = mulberry32(TOWN_SEED);
+  for (const town of TOWN_TARGETS) {
+    const { color, tx, ty } = town;
+    const castleDef = PROP_DEFS[`b_${color}_Castle`];
+    for (const [ax, ay] of spiralNear(tx, ty, 30)) {
+      if (!placeBuilding(g, ax, ay, castleDef, blocked, list)) continue;
+      LABELS.push({ x: ax - 2, y: ay - castleDef.fh - 1, text: `${color} Town` });
+      for (const entry of TOWN_COMPOSITION) {
+        const bdef = PROP_DEFS[`b_${color}_${entry.id}`];
+        for (let n = 0; n < entry.count; n++)
+          for (let t = 0; t < 80; t++) {
+            const ox = Math.floor(rng() * 25) - 12;
+            const oy = Math.floor(rng() * 25) - 12;
+            if (placeBuilding(g, ax + ox, ay + oy, bdef, blocked, list)) break;
+          }
+      }
+      spawnTownUnits(g, color, ax, ay, g[ay][ax], blocked, list, rng);
+      break;
+    }
+  }
+}
+
 function buildProps(g) {
   const rng = mulberry32(PROP_SEED);
   const list = [];
   const blocked = new Set();
+
+  generateTowns(g, blocked, list);
+
   const bushIds = ["bush1", "bush2", "bush3", "bush4"];
   const rockIds = ["rock1", "rock2", "rock3", "rock4"];
   const treeIds = ["tree1", "tree2", "tree3", "tree4"];
   const stumpIds = ["stump1", "stump2", "stump3", "stump4"];
   const waterIds = ["waterrock1", "waterrock2", "waterrock3", "waterrock4"];
 
+  // Forest density field: trees cluster into woods where this is high and thin
+  // out to open plains where it is low. Sampled by position (does not consume
+  // the scatter RNG) so layouts stay deterministic.
+  const forest = makeFbm(PROP_SEED ^ 0x4444, 10);
+
   for (let y = 1; y < H - 1; y++)
     for (let x = 1; x < W - 1; x++) {
       if (isInteriorGrass(x, y)) {
         if (g[y][x] < 1) continue;
+        if (blocked.has(`${x},${y}`)) continue;
         const r = rng();
         let defId = null, cat = null;
-        if (r < 0.05) {
+        const f = Math.max(0, (forest(x, y) - 0.45) / 0.55); // 0 open .. 1 dense
+        const tThresh = 0.02 + 0.24 * f;   // tree band scales with forest density
+        const bThresh = tThresh + 0.05;    // bushes ~5%
+        const rThresh = bThresh + 0.03;    // rocks ~3%
+        const sThresh = rThresh + 0.02;    // sheep ~2%
+        if (r < tThresh) {
           cat = "trees";
           const ti = Math.floor(rng() * 4);
           defId = rng() < 0.15 ? stumpIds[ti] : treeIds[ti];
-        } else if (r < 0.10) {
+        } else if (r < bThresh) {
           cat = "bushes";
           defId = pickVariant(rng, bushIds);
-        } else if (r < 0.13) {
+        } else if (r < rThresh) {
           cat = "rocks";
           defId = pickVariant(rng, rockIds);
-        } else if (r < 0.15) {
+        } else if (r < sThresh) {
           // Sheep are roaming agents: a state machine cycles them between
           // walking (move anim, actually moving) and resting (idle/grass).
           const startMove = rng() < 0.5;
@@ -299,9 +530,12 @@ function sizePropsCanvas(zoom) {
   ctx.imageSmoothingEnabled = false;
 }
 
-// Roaming sheep ------------------------------------------------------------
+// Roaming walkers (sheep + town units) ------------------------------------
+const WALKER_CATS = new Set(["sheep", "units"]);
 const SHEEP_SPEED = 0.9;       // tiles per second while walking
 const SHEEP_WANDER_RADIUS = 7; // max tiles a sheep strays from its spawn
+const UNIT_SPEED = 1.2;
+const UNIT_WANDER_RADIUS = 9;
 
 function isRampCell(x, y) {
   if (!inB(x, y)) return false;
@@ -309,7 +543,7 @@ function isRampCell(x, y) {
   return !!(rec && rec.layer && rec.layer.startsWith("ramp"));
 }
 
-function sheepSpriteClear(g, fx, fy) {
+function sheepSpriteClear(g, fx, fy, size = 128) {
   const tx = Math.floor(fx), ty = Math.floor(fy);
   if (!inB(tx, ty)) return false;
   if (isRampCell(tx, ty)) return true; // ramps intentionally bridge tiers
@@ -318,30 +552,51 @@ function sheepSpriteClear(g, fx, fy) {
   const destY = fy * TILE - TILE;
   const cx0 = Math.max(0, Math.floor(destX / TILE));
   const cy0 = Math.max(0, Math.floor(destY / TILE));
-  const cx1 = Math.min(W - 1, Math.floor((destX + 128 - 1) / TILE));
-  const cy1 = Math.min(H - 1, Math.floor((destY + 128 - 1) / TILE));
+  const cx1 = Math.min(W - 1, Math.floor((destX + size - 1) / TILE));
+  const cy1 = Math.min(H - 1, Math.floor((destY + size - 1) / TILE));
   for (let cy = cy0; cy <= cy1; cy++)
     for (let cx = cx0; cx <= cx1; cx++)
       if (g[cy][cx] >= 1 && g[cy][cx] !== baseElev) return false;
   return true;
 }
 
-function sheepWalkable(g, fx, fy, skipSheep) {
+function sheepWalkable(g, fx, fy, self, blocked = blockedCells) {
   const tx = Math.floor(fx), ty = Math.floor(fy);
   if (!inB(tx, ty) || g[ty][tx] < 1) return false;
-  if (blockedCells.has(`${tx},${ty}`)) return false;
+  if (blocked.has(`${tx},${ty}`)) return false;
   const rec = cellRecord[ty][tx];
   if (rec && rec.layer === "cliff") return false;
   if (!sheepSpriteClear(g, fx, fy)) return false;
-  if (skipSheep) {
+  if (self) {
     for (const o of PROPS) {
-      if (o.cat !== "sheep" || o === skipSheep) continue;
+      if (!WALKER_CATS.has(o.cat) || o === self) continue;
       const ox = o.fx !== undefined ? o.fx : o.x;
       const oy = o.fy !== undefined ? o.fy : o.y;
       if (Math.floor(ox) === tx && Math.floor(oy) === ty) return false;
     }
   }
   return true;
+}
+
+function walkerStep(p, speed, wanderRadius, stepSec) {
+  const dx = Math.cos(p.heading), dy = Math.sin(p.heading);
+  const nx = p.fx + dx * speed * stepSec;
+  const ny = p.fy + dy * speed * stepSec;
+  const distHome = Math.hypot(nx - p.homeX, ny - p.homeY);
+  const ctx0 = Math.floor(p.fx), cty0 = Math.floor(p.fy);
+  const ntx = Math.floor(nx), nty = Math.floor(ny);
+  const sameElev = inB(ntx, nty) && WORLD[nty][ntx] === WORLD[cty0][ctx0];
+  const rampTarget = isRampCell(ntx, nty);
+  const rampCurrent = isRampCell(ctx0, cty0);
+  const elevDelta = inB(ntx, nty) ? Math.abs(WORLD[nty][ntx] - WORLD[cty0][ctx0]) : Infinity;
+  const viaRamp = rampTarget && rampCurrent && elevDelta === 1;
+  const elevOk = sameElev || viaRamp;
+  if (elevOk && sheepWalkable(WORLD, nx, ny, p) && distHome < wanderRadius) {
+    p.fx = nx; p.fy = ny;
+    if (Math.abs(dx) > 0.01) p.facing = dx > 0 ? 1 : -1;
+  } else {
+    p.heading = Math.atan2(p.homeY - p.fy, p.homeX - p.fx) + (Math.random() * 2 - 1) * 0.8;
+  }
 }
 
 function setSheepState(p, state) {
@@ -367,25 +622,34 @@ function updateSheep(dtMs) {
     if (p.cat !== "sheep") continue;
     if (animClock >= p.stateUntil) advanceSheepState(p);
     if (p.state !== "move") continue;
-    const dx = Math.cos(p.heading), dy = Math.sin(p.heading);
-    const nx = p.fx + dx * SHEEP_SPEED * stepSec;
-    const ny = p.fy + dy * SHEEP_SPEED * stepSec;
-    const distHome = Math.hypot(nx - p.homeX, ny - p.homeY);
-    const ctx0 = Math.floor(p.fx), cty0 = Math.floor(p.fy);
-    const ntx = Math.floor(nx), nty = Math.floor(ny);
-    const sameElev = inB(ntx, nty) && WORLD[nty][ntx] === WORLD[cty0][ctx0];
-    const rampTarget = isRampCell(ntx, nty);
-    const rampCurrent = isRampCell(ctx0, cty0);
-    const elevDelta = inB(ntx, nty) ? Math.abs(WORLD[nty][ntx] - WORLD[cty0][ctx0]) : Infinity;
-    const viaRamp = rampTarget && rampCurrent && elevDelta === 1;
-    const elevOk = sameElev || viaRamp;
-    if (elevOk && sheepWalkable(WORLD, nx, ny, p) && distHome < SHEEP_WANDER_RADIUS) {
-      p.fx = nx; p.fy = ny;
-      if (Math.abs(dx) > 0.01) p.facing = dx > 0 ? 1 : -1;
-    } else {
-      // Blocked by water/edge or strayed too far: steer back toward home.
-      p.heading = Math.atan2(p.homeY - p.fy, p.homeX - p.fx) + (Math.random() * 2 - 1) * 0.8;
-    }
+    walkerStep(p, SHEEP_SPEED, SHEEP_WANDER_RADIUS, stepSec);
+  }
+}
+
+function setUnitState(p, state) {
+  p.state = state;
+  p.def = PROP_DEFS[state === "move" ? p.runKey : p.idleKey];
+  p.phaseMs = Math.random() * p.def.frameCount * p.def.frameDurationMs;
+}
+
+function advanceUnitState(p) {
+  if (p.state === "move") {
+    setUnitState(p, "idle");
+    p.stateUntil = animClock + 2000 + Math.random() * 3000;
+  } else {
+    setUnitState(p, "move");
+    p.heading = Math.random() * Math.PI * 2;
+    p.stateUntil = animClock + 1500 + Math.random() * 2500;
+  }
+}
+
+function updateUnits(dtMs) {
+  const stepSec = dtMs / 1000;
+  for (const p of PROPS) {
+    if (p.cat !== "units") continue;
+    if (animClock >= p.stateUntil) advanceUnitState(p);
+    if (p.state !== "move") continue;
+    walkerStep(p, UNIT_SPEED, p.wanderRadius ?? UNIT_WANDER_RADIUS, stepSec);
   }
 }
 
@@ -434,7 +698,7 @@ function renderPropsFrame(now) {
   const ctx = canvas.getContext("2d");
   const stage = document.getElementById("stageWrap");
   const zoom = Math.max(1, Math.min(64, parseInt(document.getElementById("zoom").value) || 6));
-  const pad = 4;
+  const pad = 10;
   const vx0 = Math.max(0, Math.floor(stage.scrollLeft / zoom) - pad);
   const vy0 = Math.max(0, Math.floor(stage.scrollTop / zoom) - pad);
   const vx1 = Math.min(W - 1, Math.ceil((stage.scrollLeft + stage.clientWidth) / zoom) + pad);
@@ -470,6 +734,7 @@ function propsAnimLoop(now) {
   if (!animPaused) {
     animClock += delta;
     updateSheep(delta);
+    updateUnits(delta);
   }
 
   if (now - propsAnimLast >= PROPS_FRAME_MS) {
@@ -633,54 +898,157 @@ function staircase(g, x, y, w, bh) {
   fillRect(g, x + 8, y, w - 8, bh, 4);
 }
 
+const WORLD_SEED = 0x7A91C3;
+
+// Smooth land/water mask a few times so the coastline reads cleanly (no
+// single-cell speckles or pinholes that the tileset cannot represent well).
+function smoothLandWater(g, passes) {
+  for (let p = 0; p < passes; p++) {
+    const snap = g.map(row => row.slice());
+    for (let y = 0; y < H; y++)
+      for (let x = 0; x < W; x++) {
+        let land = 0, total = 0;
+        for (let dy = -1; dy <= 1; dy++)
+          for (let dx = -1; dx <= 1; dx++) {
+            const v = get(snap, x + dx, y + dy);
+            total++;
+            if (v >= 0) land++;
+          }
+        if (land >= 6) g[y][x] = Math.max(g[y][x], 1);
+        else if (land <= 2) g[y][x] = WATER;
+      }
+  }
+}
+
+// Drop land cells that are not part of the main contiguous landmass (tiny
+// stranded islets) so the map is one clean island.
+function keepMainLandmass(g) {
+  const seen = Array.from({ length: H }, () => new Array(W).fill(false));
+  let best = null, bestSize = 0;
+  for (let y = 0; y < H; y++)
+    for (let x = 0; x < W; x++) {
+      if (seen[y][x] || g[y][x] < 0) continue;
+      const stack = [[x, y]], cells = [];
+      seen[y][x] = true;
+      while (stack.length) {
+        const [cx, cy] = stack.pop();
+        cells.push([cx, cy]);
+        for (const [dx, dy] of [[0, -1], [1, 0], [0, 1], [-1, 0]]) {
+          const nx = cx + dx, ny = cy + dy;
+          if (inB(nx, ny) && !seen[ny][nx] && g[ny][nx] >= 0) {
+            seen[ny][nx] = true;
+            stack.push([nx, ny]);
+          }
+        }
+      }
+      if (cells.length > bestSize) { bestSize = cells.length; best = cells; }
+    }
+  if (!best) return;
+  const keep = new Set(best.map(([x, y]) => x + "," + y));
+  for (let y = 0; y < H; y++)
+    for (let x = 0; x < W; x++)
+      if (g[y][x] >= 0 && !keep.has(x + "," + y)) g[y][x] = WATER;
+}
+
+// Find valid side-ramp anchors along the south edges of plateaus. Mirrors the
+// renderer's own guard so every emitted ramp draws and connects cleanly.
+function autoRamps(g) {
+  const placed = [];
+  const tryPlace = (sx, sy, side) => {
+    if (!inB(sx, sy) || !inB(sx, sy - 1)) return;
+    const cornerX = side === "L" ? sx + 1 : sx - 1;
+    if (!inB(cornerX, sy - 1)) return;
+    const platform = get(g, cornerX, sy - 1);
+    if (platform < 2) return;
+    const landing = platform - 1;
+    if (get(g, sx, sy) !== landing) return;      // landing tier under the slope base
+    if (get(g, sx, sy - 1) !== landing) return;  // slope top sits on lower land beside the cliff
+    if (get(g, sx, sy + 1) < 0) return;          // need walkable ground to step off
+    if (get(g, side === "L" ? sx - 1 : sx + 1, sy) < 0) return; // exit-side apron is land
+    for (const p of placed)
+      if (Math.max(Math.abs(p.x - sx), Math.abs(p.y - sy)) < 6) return; // spread them out
+    placed.push({ side, x: sx, y: sy, label: `ramp ${landing}->${platform}` });
+  };
+  for (let y = 1; y < H - 1; y++)
+    for (let x = 1; x < W - 1; x++) {
+      const e = g[y][x];
+      if (e < 2) continue;
+      if (get(g, x, y + 1) !== e - 1) continue;  // south edge with a 1-step drop
+      if (get(g, x - 1, y) < e) tryPlace(x - 1, y + 1, "L"); // plateau bottom-left corner
+      if (get(g, x + 1, y) < e) tryPlace(x + 1, y + 1, "R"); // plateau bottom-right corner
+    }
+  return placed;
+}
+
 function buildWorld() {
-  const g = emptyGrid(1);
+  const g = emptyGrid(WATER);
   RAMPS.length = 0;
   LABELS.length = 0;
   SCENARIOS.length = 0;
 
-  fillRect(g, 0, 0, 10, H, WATER);
-  fillRect(g, 0, 150, 40, 50, WATER);
-  pyramid(g, 30, 25, 32);
-  volcano(g, 120, 40);
-  atoll(g, 20, 165);
-  moatKeep(g, 40, 110);
-  wall(g, 60, 95, 110);
-  mountain(g, 175, 45);
-  terraces(g, 150, 15);
-  maze(g, 120, 150);
-  archipelago(g, 80, 175);
-  staircase(g, 92, 52, 24, 4);
-  elevLake(g, 84, 104, 2);
-  elevLake(g, 165, 116, 3);
-  autopad(g);
+  const rng = mulberry32(WORLD_SEED);
+  const coast = makeFbm(WORLD_SEED ^ 0x1111, 16);
+  const cx = (W - 1) / 2, cy = (H - 1) / 2;
+  const maxR = Math.hypot(cx, cy);
 
-  RAMPS.push({ side: "L", x: 33, y: 30, label: "pyramid up" });
-  RAMPS.push({ side: "R", x: 124, y: 41, label: "volcano up" });
-  RAMPS.push({ side: "L", x: 163, y: 46, label: "mountain up" });
-  RAMPS.push({ side: "L", x: 60, y: 98, label: "wall up" });
-  RAMPS.push({ side: "L", x: 150, y: 39, label: "terrace up" });
-  RAMPS.push({ side: "L", x: 92, y: 64, label: "stair 1->2" });
-  RAMPS.push({ side: "L", x: 96, y: 60, label: "stair 2->3" });
-  RAMPS.push({ side: "L", x: 100, y: 56, label: "stair 3->4" });
+  // 1. Island landmass: value noise minus a radial falloff so land fills the
+  // centre and dissolves into sea toward the edges (irregular coastline).
+  for (let y = 0; y < H; y++)
+    for (let x = 0; x < W; x++) {
+      const radial = Math.hypot(x - cx, y - cy) / maxR; // 0 centre .. 1 corner
+      const v = coast(x, y) - radial * 1.15 + 0.42;
+      g[y][x] = v > 0 ? 1 : WATER;
+    }
+  smoothLandWater(g, 2);
+  keepMainLandmass(g);
 
-  const mark = (x, y, title) => {
-    SCENARIOS.push({ id: SCENARIOS.length, title, ox: x, oy: y });
-    LABELS.push({ x, y, text: title });
+  // 2. Inland lakes scattered across the landmass (organic, never on the very edge).
+  const lakeField = makeFbm(WORLD_SEED ^ 0x2222, 9);
+  let lakes = 0;
+  for (let tries = 0; tries < 1500 && lakes < 28; tries++) {
+    const lx = 12 + Math.floor(rng() * (W - 24));
+    const ly = 12 + Math.floor(rng() * (H - 24));
+    if (g[ly][lx] < 1) continue;
+    if (lakeField(lx, ly) < 0.52) continue;
+    const r = 2 + Math.floor(rng() * 4);
+    let ok = true;
+    for (let j = -r - 2; j <= r + 2 && ok; j++)
+      for (let i = -r - 2; i <= r + 2 && ok; i++)
+        if (!inB(lx + i, ly + j) || g[ly + j][lx + i] < 0) ok = false; // keep lakes inland
+    if (!ok) continue;
+    stampLake(g, lx, ly, r);
+    lakes++;
+  }
+
+  // 3. Hills / plateaus: a central "keep" highland plus a few scattered hills.
+  // stampDisc raises only land it covers (max), so hills rise out of the plains.
+  const stampHillOnLand = (hx, hy, r, lvl) => {
+    for (let j = hy - r; j <= hy + r; j++)
+      for (let i = hx - r; i <= hx + r; i++)
+        if (inB(i, j) && g[j][i] >= 1 && Math.hypot(i - hx, j - hy) <= r)
+          g[j][i] = Math.max(g[j][i], lvl);
   };
-  mark(30, 25, "Great Pyramid");
-  mark(120, 40, "Volcano + crater lake");
-  mark(20, 165, "Atoll lagoon");
-  mark(40, 110, "Moated keep");
-  mark(60, 95, "Great Wall");
-  mark(175, 45, "Mountain");
-  mark(150, 15, "Terraced ponds");
-  mark(120, 150, "Labyrinth");
-  mark(80, 175, "Archipelago");
-  mark(92, 52, "Stepped staircase");
-  mark(84, 104, "Lake (lvl2)");
-  mark(165, 116, "Lake (lvl3)");
-  mark(2, 2, "Sea");
+  // Central keep highland (offset north so it shows a south face).
+  stampHillOnLand(Math.round(cx), Math.round(cy) - 4, 12, 2);
+  stampHillOnLand(Math.round(cx), Math.round(cy) - 6, 7, 3);
+  stampHillOnLand(Math.round(cx), Math.round(cy) - 8, 3, 4);
+  // Scattered outer hills.
+  const hillField = makeFbm(WORLD_SEED ^ 0x3333, 11);
+  let hills = 0;
+  for (let tries = 0; tries < 1500 && hills < 16; tries++) {
+    const hx = 14 + Math.floor(rng() * (W - 28));
+    const hy = 14 + Math.floor(rng() * (H - 28));
+    if (g[hy][hx] < 1) continue;
+    if (Math.hypot(hx - cx, hy - cy) < 18) continue; // keep clear of the keep
+    if (hillField(hx, hy) < 0.5) continue;
+    const r = 4 + Math.floor(rng() * 4);
+    stampHillOnLand(hx, hy, r, 2);
+    if (rng() < 0.5) stampHillOnLand(hx, hy - 2, Math.max(2, r - 3), 3);
+    hills++;
+  }
+
+  autopad(g);
+  RAMPS.push(...autoRamps(g));
 
   return g;
 }

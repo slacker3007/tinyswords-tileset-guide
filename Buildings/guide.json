@@ -1,0 +1,185 @@
+{
+  "folder": "TinySwords/Buildings",
+  "tileSize": 64,
+  "description": "Static faction-colored buildings for the Tiny Swords asset pack. Eight building types per palette; each is a single PNG (no animation, no Aseprite source in the pack). Draw on the y-sorted props layer with bottom-centre anchoring; multi-tile footprints block walkers.",
+  "guideVersion": "0.0.0.7",
+  "sourceFiles": {
+    "aseprite": false,
+    "note": "Unlike trees, bushes, sheep, and units, the Buildings pack ships exported PNGs only. There is no Buildings.aseprite in the Tiny Swords download."
+  },
+  "factionPalettes": {
+    "folders": [
+      "Black Buildings",
+      "Blue Buildings",
+      "Purple Buildings",
+      "Red Buildings",
+      "Yellow Buildings"
+    ],
+    "rule": "Each palette subfolder contains the same eight filenames with identical geometry; only the faction trim color differs. Load path pattern: TinySwords/Buildings/{palette}/{BuildingName}.png"
+  },
+  "renderLayers": {
+    "props": {
+      "order": "After ground tiles, cliff bases, stair ramps, and road overlay (when present); before top overlays (clouds, UI). Same layer as trees and other y-sorted props.",
+      "ySort": true,
+      "note": "Sort by the placement anchor tile (footprint bottom-centre). Taller south-facing sprites draw on top of sprites further north."
+    }
+  },
+  "buildingRules": {
+    "anchoring": {
+      "rule": "Anchor each sprite at bottom-centre: anchorX = spriteWidth / 2, anchorY = spriteHeight. The anchor tile is the bottom-centre cell of the logical footprint.",
+      "drawOffset": {
+        "destX": "anchorTileX * tileSize + tileSize / 2 - anchorX",
+        "destY": "anchorTileY * tileSize + tileSize - anchorY",
+        "note": "Same formula as trees and sheep in the reference prop renderer."
+      }
+    },
+    "footprint": {
+      "rule": "Sprite PNG height includes roof and baked ground shadow. The logical footprint (collision / blockedCells) is smaller than the art rectangle and covers only the walkable ground the building occupies.",
+      "anchorTile": "Bottom-centre cell of footprintTiles."
+    },
+    "collision": {
+      "rule": "Every cell in footprintTiles is added to blockedCells. Walkers (sheep, future units) cannot enter those tiles.",
+      "blocksWalkers": true
+    },
+    "placementRules": {
+      "onLandOnly": {
+        "rule": "Place only on land (elevation >= 1). All footprint cells must be walkable grass at the same elevation tier. Never on water, cliff-face cells, cliff-base cells, or ramp cells.",
+        "doNotApply": "Water (elevation -1), cliff layer cells, ramp-top / ramp-bottom cells."
+      },
+      "flatPreferred": {
+        "rule": "Prefer open interior centre grass (autotile piece 5) with room for the full footprint plus one tile of clearance on each side so roofs and shadows do not clip awkwardly into cliffs or water.",
+        "preferredPieceId": 5
+      },
+      "elevationUniform": {
+        "rule": "Every tile under the footprint must share the same elevation. Buildings do not span tier changes."
+      }
+    }
+  },
+  "assets": [
+    {
+      "id": "house1",
+      "name": "House 1",
+      "files": ["House1.png"],
+      "type": "static-sprite",
+      "size": { "width": 128, "height": 192 },
+      "anchor": { "x": 64, "y": 192, "note": "Bottom-centre of the sprite." },
+      "footprint": {
+        "tilesWide": 2,
+        "tilesTall": 1,
+        "anchorTile": "bottom-centre of the 2x1 block",
+        "note": "Small cottage; art is 128px (2 tiles) wide. Shadow extends slightly south of the footprint row."
+      },
+      "renderLayer": "props",
+      "ySort": true,
+      "usage": { "summary": "Small house variant 1.", "role": "Village filler / player base hut." }
+    },
+    {
+      "id": "house2",
+      "name": "House 2",
+      "files": ["House2.png"],
+      "type": "static-sprite",
+      "size": { "width": 128, "height": 192 },
+      "anchor": { "x": 64, "y": 192 },
+      "footprint": { "tilesWide": 2, "tilesTall": 1, "anchorTile": "bottom-centre of the 2x1 block" },
+      "renderLayer": "props",
+      "ySort": true,
+      "usage": { "summary": "Small house variant 2.", "role": "Village filler / player base hut." }
+    },
+    {
+      "id": "house3",
+      "name": "House 3",
+      "files": ["House3.png"],
+      "type": "static-sprite",
+      "size": { "width": 128, "height": 192 },
+      "anchor": { "x": 64, "y": 192 },
+      "footprint": { "tilesWide": 2, "tilesTall": 1, "anchorTile": "bottom-centre of the 2x1 block" },
+      "renderLayer": "props",
+      "ySort": true,
+      "usage": { "summary": "Small house variant 3.", "role": "Village filler / player base hut." }
+    },
+    {
+      "id": "tower",
+      "name": "Tower",
+      "files": ["Tower.png"],
+      "type": "static-sprite",
+      "size": { "width": 128, "height": 256 },
+      "anchor": { "x": 64, "y": 256 },
+      "footprint": {
+        "tilesWide": 2,
+        "tilesTall": 1,
+        "anchorTile": "bottom-centre of the 2x1 block",
+        "note": "Tall narrow tower; extra height is visual only above the 2-tile-wide base."
+      },
+      "renderLayer": "props",
+      "ySort": true,
+      "usage": { "summary": "Defensive tower.", "role": "Outpost / wall anchor." }
+    },
+    {
+      "id": "archery",
+      "name": "Archery",
+      "files": ["Archery.png"],
+      "type": "static-sprite",
+      "size": { "width": 192, "height": 256 },
+      "anchor": { "x": 96, "y": 256 },
+      "footprint": {
+        "tilesWide": 3,
+        "tilesTall": 2,
+        "anchorTile": "bottom-centre of the 3x2 block",
+        "note": "Open-front range building; door faces south toward the viewer."
+      },
+      "renderLayer": "props",
+      "ySort": true,
+      "usage": { "summary": "Archery range production building.", "role": "Military / ranged unit spawn." }
+    },
+    {
+      "id": "barracks",
+      "name": "Barracks",
+      "files": ["Barracks.png"],
+      "type": "static-sprite",
+      "size": { "width": 192, "height": 256 },
+      "anchor": { "x": 96, "y": 256 },
+      "footprint": {
+        "tilesWide": 3,
+        "tilesTall": 2,
+        "anchorTile": "bottom-centre of the 3x2 block"
+      },
+      "renderLayer": "props",
+      "ySort": true,
+      "usage": { "summary": "Barracks production building.", "role": "Military / melee unit spawn." }
+    },
+    {
+      "id": "monastery",
+      "name": "Monastery",
+      "files": ["Monastery.png"],
+      "type": "static-sprite",
+      "size": { "width": 192, "height": 320 },
+      "anchor": { "x": 96, "y": 320 },
+      "footprint": {
+        "tilesWide": 3,
+        "tilesTall": 2,
+        "anchorTile": "bottom-centre of the 3x2 block",
+        "note": "Tallest standard building (320px). Bell tower and roof extend well above the footprint."
+      },
+      "renderLayer": "props",
+      "ySort": true,
+      "usage": { "summary": "Monastery / support building.", "role": "Healer (monk) production." }
+    },
+    {
+      "id": "castle",
+      "name": "Castle",
+      "files": ["Castle.png"],
+      "type": "static-sprite",
+      "size": { "width": 320, "height": 256 },
+      "anchor": { "x": 160, "y": 256 },
+      "footprint": {
+        "tilesWide": 5,
+        "tilesTall": 3,
+        "anchorTile": "bottom-centre of the 5x3 block",
+        "note": "Largest building. Wide rounded curtain walls; central gate faces south. Suitable for map centre or player town hall."
+      },
+      "renderLayer": "props",
+      "ySort": true,
+      "usage": { "summary": "Main castle / town hall.", "role": "Faction headquarters landmark." }
+    }
+  ]
+}

@@ -2,12 +2,7 @@
   "folder": "TinySwords/Terrain/Decorations/Bushes",
   "tileSize": 64,
   "description": "Animated terrain decoration bushes for the Tiny Swords asset pack. Each variant is an 8-frame horizontal sprite sheet exported from Bushes.aseprite.",
-  "roadmapVersion": "0.0.0.2",
-  "nextMilestone": {
-    "version": "0.0.1.0",
-    "title": "Road overlay complete",
-    "roadmapFile": "ROADMAP.md"
-  },
+  "guideVersion": "0.0.0.7",
   "renderLayers": {
     "props": {
       "order": "After ground tiles, cliff bases, and stair ramps; before top overlays (clouds, etc.).",

@@ -2,12 +2,7 @@
   "folder": "TinySwords/Terrain/Decorations/Rocks in the Water",
   "tileSize": 64,
   "description": "Animated water rock decorations for the Tiny Swords asset pack. Each variant is a 16-frame horizontal sprite sheet exported from Water Rocks_0N.aseprite.",
-  "roadmapVersion": "0.0.0.3",
-  "nextMilestone": {
-    "version": "0.0.1.0",
-    "title": "Road overlay complete",
-    "roadmapFile": "ROADMAP.md"
-  },
+  "guideVersion": "0.0.0.7",
   "renderLayers": {
     "props": {
       "order": "After ground tiles, cliff bases, and stair ramps; before top overlays (clouds, etc.).",
