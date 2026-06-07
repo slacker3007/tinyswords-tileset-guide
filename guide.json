@@ -174,8 +174,8 @@
           "order": ["N", "E", "S", "W"],
           "encoding": "mask = (Nsame << 3) | (Esame << 2) | (Ssame << 1) | Wsame",
           "bitMeaning": {
-            "1": "neighbor is SAME terrain group (same elevation for land, or another road cell for roads)",
-            "0": "neighbor is OTHER (lower/higher elevation, water, off-map, or non-road)"
+            "1": "neighbor is SAME terrain group (land elevation >= cell elevation, or another road cell for roads)",
+            "0": "neighbor is OTHER (strictly lower land elevation, water, off-map, or non-road)"
           },
           "outOfBounds": "Treated as 0 (OTHER)."
         },
@@ -277,7 +277,7 @@
           },
           "landToLandMaxDrop": 1,
           "horizontalVariantSelection": {
-            "description": "Pick left/middle/right/narrow based on whether the cliff column is at the left edge, interior, right edge, or 1-tile-wide of the south-facing platform."
+            "description": "Pick left/middle/right/narrow from the cliff column's E/W neighbors at the lip row. A side is a rounded END only when that neighbor is strictly lower (open ground or water); when the neighbor is same-or-higher land, a rock wall continues there and the face is flush (left/mid/right). Both sides open -> narrow; open left only -> left (17); open right only -> right (19); neither open -> mid (18). Matches autotile lip continuity: a left lip (10) pairs with a left face (17), not narrow (20)."
           }
         },
         "stairsRules": {
@@ -430,7 +430,7 @@
           "For each cell (x, y):",
           "  1. Skip ground placement if elevation < 0 (water cells use Water Background color.png).",
           "  2. Resolve ground tilemap: Tilemap_color<elevation+1>.png.",
-          "  3. Compute neighbor mask: Nsame = (north.elevation == cell.elevation) ? 1 : 0; repeat for E, S, W. mask = (Nsame<<3)|(Esame<<2)|(Ssame<<1)|Wsame.",
+          "  3. Compute neighbor mask: Nsame = (north.elevation >= cell.elevation) ? 1 : 0; repeat for E, S, W. Equal-or-higher land counts as same group so lower tiers render center grass (piece 5 / raw 11) under plateau rims instead of grass-to-water shoreline edges. mask = (Nsame<<3)|(Esame<<2)|(Ssame<<1)|Wsame.",
           "  4. pieceId = flatGroundLookup[mask].",
           "  5. If cell.elevation > 0 AND south.elevation < cell.elevation:",
           "     a. Apply elevatedGroundRules.southCliffLipSubstitutions to pieceId if listed (when gap >= 2 or south is water) ONLY if the north neighbor is water; otherwise keep the all-grass lip piece (see waterCliffTopRule).",
@@ -445,7 +445,8 @@
           "description": "Hard adjacency invariants. Violations produce visual water-strip defects because the asset has no grass-to-lower-grass border tile, only grass-to-water.",
           "elevationGradient": {
             "rule": "Non-south neighbors (N/E/W, water, off-map) may be any walkable elevation, water, or off-map. Plateau rim pieces (elevatedGround 1/2/3/4/6; sheet 6/7/8/15/17) sit flush against lower base land without drawing a cliff on those sides. Only the SOUTH neighbor must step down by exactly 1 (to walkable land), to water (-1), or be off-map.",
-            "rationale": "Cliff-face art exists only on the south face (sheet 42/43/44/45 on land, 51/52/53/54 on water). The old rule requiring N/E/W neighbors >= N was for teal-seam avoidance on mask-0 edges; plateau rims use elevated-grass edge art, not water-shoreline mask-0 edges, when abutting lower land.",
+            "autotileSameness": "Land autotile mask bits use elevation >= cell.elevation (not strict equality). A lower cell beside or below a higher plateau therefore selects center grass (flatGround 5 / raw 11), not a grass-to-water shoreline edge; the plateau above keeps its grass-surface rim pieces. This avoids teal water-strip defects without requiring water moats or seam-cover strips on N/E/W.",
+            "rationale": "Cliff-face art exists only on the south face (sheet 42/43/44/45 on land, 51/52/53/54 on water). Equal-or-higher sameness lets plateau rims abut lower land cleanly: lower tiers underdraw with center grass, upper tiers overdraw with elevated-grass edge art.",
             "applies": "All ground tilemaps (Tilemap_color1..5).",
             "exception": "Stair ramp cells are exempt from autopad south demotion; they keep their authored elevation so the ramp can bridge a 1-step drop. Ramps explicitly bridge a south-facing 1-tile elevation drop and are placed manually.",
             "seamCoverException": {
