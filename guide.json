@@ -702,5 +702,58 @@
         }
       }
     }
-  ]
+  ],
+  "propSystem": {
+    "implementedIn": "elevation-examples.html (reference implementation; not loaded from this file at runtime)",
+    "note": "Shared prop-layer behaviours for trees, bushes, rocks, water rocks, and sheep. Constants below are illustrative defaults from the example; other projects may tune them.",
+    "categories": ["trees", "bushes", "rocks", "waterrocks", "sheep"],
+    "deterministicScatter": {
+      "prng": "mulberry32",
+      "seed": "0xDEC0FCAE",
+      "rule": "One PRNG stream is walked left-to-right, top-to-bottom over interior map cells so the same terrain seed always produces the same prop layout."
+    },
+    "placementSampling": {
+      "landEligibility": {
+        "rule": "Land props scatter only on interior centre grass: cellRecord layer \"ground\" with semanticId 5 (autotile piece 5, mask 1111), elevation >= 1, with a one-tile map border excluded from sampling."
+      },
+      "densityBands": {
+        "description": "Per eligible land cell, draw r in [0, 1) from the scatter PRNG. First matching band wins.",
+        "bands": [
+          { "category": "trees", "maxR": 0.05, "variantNote": "15% of tree rolls become stumps instead of full trees." },
+          { "category": "bushes", "maxR": 0.10 },
+          { "category": "rocks", "maxR": 0.13 },
+          { "category": "sheep", "maxR": 0.15 },
+          { "category": "empty", "note": "No prop when r >= 0.15." }
+        ]
+      },
+      "waterRocks": {
+        "rule": "Water rocks scatter on fully open water cells only: elevation -1 and all eight neighbours also water.",
+        "probability": 0.003
+      }
+    },
+    "variants": {
+      "rule": "Each category has four visual variants (bush1-4, rock1-4, tree1-4, stump1-4, waterrock1-4). pickVariant selects uniformly at random from the category's id list."
+    },
+    "collision": {
+      "blockedCategories": ["trees", "bushes", "rocks"],
+      "rule": "When a blocked-category prop is placed, its tile coordinates are added to blockedCells. Walking agents (sheep) cannot enter those tiles."
+    },
+    "ySort": {
+      "rule": "Before drawing, visible props are sorted by base Y ascending, then base X ascending, so sprites lower on the map draw on top of sprites farther north."
+    },
+    "animationPhasing": {
+      "rule": "Every animated prop receives a random phaseMs offset in [0, frameCount * frameDurationMs) at spawn so identical animations do not play in lockstep."
+    },
+    "rendering": {
+      "canvas": "#props",
+      "layerOrder": "Above terrain map and below debug overlay.",
+      "viewportCulling": "Only props whose sprite bounds intersect the current viewport are drawn each frame.",
+      "pauseToggle": "A global pause control freezes the animation clock and stops prop motion updates."
+    },
+    "layerToggles": {
+      "rule": "Per-category enable flags (trees, bushes, rocks, waterrocks, sheep) allow staged generation: terrain first, then add decoration categories individually.",
+      "default": "All categories enabled."
+    },
+    "sheepBehaviorGuide": "tinyswords-tileset-guide/Terrain/Resources/Meat/Sheep/guide.json (behaviorRules section)"
+  }
 }

@@ -29,6 +29,74 @@
       "note": "Grazing loop; used in example scatter."
     }
   },
+  "behaviorRules": {
+    "implementedIn": "elevation-examples.html (reference implementation; not loaded from this file at runtime)",
+    "note": "Constants below are illustrative defaults from the example. Other projects may tune them.",
+    "stateMachine": {
+      "states": ["idle", "move", "grass"],
+      "transitions": {
+        "move": {
+          "next": [
+            { "state": "grass", "weight": 0.5 },
+            { "state": "idle", "weight": 0.5 }
+          ],
+          "durationMs": { "min": 2000, "max": 6000 }
+        },
+        "idleOrGrass": {
+          "next": "move",
+          "durationMs": { "min": 1500, "max": 3500 },
+          "onEnter": "Pick a new random heading (0 to 2π radians)."
+        }
+      },
+      "initialSpawn": {
+        "startMoveProbability": 0.5,
+        "startGrassProbabilityWhenNotMoving": 0.5,
+        "initialTimerMs": { "min": 800, "max": 4800 }
+      },
+      "animationBinding": {
+        "idle": "sheepIdle",
+        "move": "sheepMove",
+        "grass": "sheepGrass",
+        "note": "On state change, swap the active sprite definition and randomize animation phase."
+      }
+    },
+    "roaming": {
+      "speedTilesPerSec": 0.9,
+      "wanderRadiusTiles": 7,
+      "rule": "Only the move state translates position. Each frame, advance along the current heading by speed * deltaTime. A step is committed only when walkability and elevation rules pass and the new position stays within wanderRadiusTiles of the spawn (home) point.",
+      "blockedSteering": {
+        "rule": "When a step is rejected (blocked tile, elevation violation, or beyond wander radius), re-aim toward home using atan2(homeY - fy, homeX - fx) plus random jitter in [-0.8, +0.8] radians."
+      }
+    },
+    "elevationCrossing": {
+      "rule": "Sheep may change elevation only by stepping between two ramp cells one tier apart. Both the current tile (floor of fx/fy) and the target tile (floor of next position) must be ramp cells, and the absolute elevation delta must be exactly 1.",
+      "rampIdentification": "A cell is a ramp when cellRecord[y][x].layer starts with \"ramp\" (e.g. ramp-top, ramp-bottom, ramp-backdrop).",
+      "sameTierMoves": "When elevations match, no ramp is required.",
+      "forbidden": "Stepping directly across a cliff edge onto a different tier without traversing ramp cells."
+    },
+    "spriteClearance": {
+      "rule": "Reject a candidate position if the 128x128 sprite bounding box (anchored bottom-centre on the float position) overlaps any land cell (elevation >= 1) whose elevation differs from the sheep's base tile.",
+      "rampExemption": "When the base tile is a ramp cell, sprite clearance is skipped for that position because ramps intentionally bridge tiers.",
+      "rationale": "The sprite is larger than its 1-tile logical footprint. A base point that is legally on one tier can still visually spill into neighbouring tiers without this check."
+    },
+    "walkability": {
+      "rule": "A candidate float position (fx, fy) is walkable when all of the following hold:",
+      "requirements": [
+        "Base tile (floor(fx), floor(fy)) is in bounds and land (elevation >= 1).",
+        "Base tile is not in blockedCells (trees, bushes, rocks occupy their spawn tile).",
+        "cellRecord layer is not \"cliff\" (vertical cliff-face cells are not standable).",
+        "spriteClearance passes (unless on a ramp base tile).",
+        "No other sheep already occupies the same base tile."
+      ]
+    },
+    "facing": {
+      "rule": "Horizontal sprite flip follows movement direction. When |dx| > 0.01 during a committed move step, facing = 1 (right) if dx > 0, else -1 (left)."
+    },
+    "placementVsMovement": {
+      "placement": "Initial scatter (placementRules.onLandOnly) never spawns sheep on water, cliff-face cells, cliff-base cells, or ramp cells.",
+      "movement": "During roaming, ramp cells are the only legal way to change elevation tier. These rules are complementary: spawn avoids ramps; movement uses ramps exclusively for tier changes."
+    }
+  },
   "assets": [
     {
       "id": "sheepIdle",

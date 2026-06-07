@@ -31,8 +31,8 @@
   .stage-wrap::-webkit-scrollbar { width: 0; height: 0; display: none; }
   .stage-wrap.panning { cursor: grabbing; }
   .stage-inner { position: relative; display: inline-block; }
-  #map, #overlay { display: block; image-rendering: pixelated; box-shadow: 0 0 0 1px #2c3744; }
-  #overlay { position: absolute; left: 0; top: 0; pointer-events: none; }
+  #map, #props, #overlay { display: block; image-rendering: pixelated; box-shadow: 0 0 0 1px #2c3744; }
+  #props, #overlay { position: absolute; left: 0; top: 0; pointer-events: none; }
   .hit-layer { position: absolute; left: 0; top: 0; cursor: inherit; }
   #panel { width: 320px; height: 1080px; border-left: 1px solid #232c37; overflow: auto; padding: 10px; font-size: 11px; background: #0d1117; }
   #panel h2 { font-size: 12px; margin: 0 0 8px; color: #93a4b8; }
@@ -62,6 +62,7 @@
   <div class="controls">
     <label>Zoom <input id="zoom" type="number" min="1" max="64" value="64" /><span style="color:#8b98a8;margin-left:2px">px/tile</span></label>
     <button id="oneToOne" title="1:1 native pixels (64px tiles)">1:1</button>
+    <button id="pause" title="Pause/resume prop animations">Pause</button>
     <button id="reload" class="primary">Reload</button>
     <span id="meta"></span>
   </div>
@@ -76,6 +77,12 @@
     <label><input type="checkbox" id="togLabels" /> Labels</label>
     <label><input type="checkbox" id="togShadow" /> Shadows</label>
     <label><input type="checkbox" id="togViol" /> Violations</label>
+    <span style="color:#4b5563;margin:0 4px">|</span>
+    <label><input type="checkbox" id="togTrees" checked /> Trees</label>
+    <label><input type="checkbox" id="togBushes" checked /> Bushes</label>
+    <label><input type="checkbox" id="togRocks" checked /> Rocks</label>
+    <label><input type="checkbox" id="togWaterRocks" checked /> Water Rocks</label>
+    <label><input type="checkbox" id="togSheep" checked /> Sheep</label>
   </div>
   <p class="note">200x200 bug-hunt map: pyramid, volcano, atoll, moated keep, great wall, mountain, terraces, labyrinth, archipelago, stepped cliffs, flush lakes at lvl2/3/4, sea + bay. All tiers 1–4, ramps, narrow strips. Turn on <b>Labels</b> and <b>Violations</b> to inspect. <b>Drag/WASD to pan; scroll wheel zooms</b> (opens at 1:1, overlays off). Serve from repo root: <code>python -m http.server 8000</code> then open <code>/elevation-examples.html</code>.</p>
 </header>
@@ -84,6 +91,7 @@
   <div class="stage-wrap" id="stageWrap" tabindex="0">
     <div class="stage-inner" id="stageInner">
       <canvas id="map"></canvas>
+      <canvas id="props"></canvas>
       <canvas id="overlay"></canvas>
       <div class="hit-layer" id="hitLayer"></div>
     </div>
@@ -134,7 +142,342 @@ const ASSET_FILES = {
   color5:"Tileset/Tilemap_color5.png",
   foam:"Tileset/Water Foam.png", water:"Tileset/Water Background color.png",
   shadow:"Tileset/Shadow.png",
+  bush1:"Decorations/Bushes/Bushe1.png", bush2:"Decorations/Bushes/Bushe2.png",
+  bush3:"Decorations/Bushes/Bushe3.png", bush4:"Decorations/Bushes/Bushe4.png",
+  rock1:"Decorations/Rocks/Rock1.png", rock2:"Decorations/Rocks/Rock2.png",
+  rock3:"Decorations/Rocks/Rock3.png", rock4:"Decorations/Rocks/Rock4.png",
+  waterrock1:"Decorations/Rocks in the Water/Water Rocks_01.png",
+  waterrock2:"Decorations/Rocks in the Water/Water Rocks_02.png",
+  waterrock3:"Decorations/Rocks in the Water/Water Rocks_03.png",
+  waterrock4:"Decorations/Rocks in the Water/Water Rocks_04.png",
+  sheepIdle:"Resources/Meat/Sheep/Sheep_Idle.png",
+  sheepMove:"Resources/Meat/Sheep/Sheep_Move.png",
+  sheepGrass:"Resources/Meat/Sheep/Sheep_Grass.png",
+  tree1:"Resources/Wood/Trees/Tree1.png", tree2:"Resources/Wood/Trees/Tree2.png",
+  tree3:"Resources/Wood/Trees/Tree3.png", tree4:"Resources/Wood/Trees/Tree4.png",
+  stump1:"Resources/Wood/Trees/Stump 1.png", stump2:"Resources/Wood/Trees/Stump 2.png",
+  stump3:"Resources/Wood/Trees/Stump 3.png", stump4:"Resources/Wood/Trees/Stump 4.png",
 };
+
+const ANIM_MS = 100;
+const PROP_DEFS = {
+  bush1:  { assetKey:"bush1",  frameW:128, frameH:128, frameCount:8,  frameDurationMs:ANIM_MS, anchorX:64, anchorY:128, animated:true },
+  bush2:  { assetKey:"bush2",  frameW:128, frameH:128, frameCount:8,  frameDurationMs:ANIM_MS, anchorX:64, anchorY:128, animated:true },
+  bush3:  { assetKey:"bush3",  frameW:128, frameH:128, frameCount:8,  frameDurationMs:ANIM_MS, anchorX:64, anchorY:128, animated:true },
+  bush4:  { assetKey:"bush4",  frameW:128, frameH:128, frameCount:8,  frameDurationMs:ANIM_MS, anchorX:64, anchorY:128, animated:true },
+  rock1:  { assetKey:"rock1",  frameW:64,  frameH:64,  frameCount:1,  frameDurationMs:ANIM_MS, anchorX:32, anchorY:64,  animated:false },
+  rock2:  { assetKey:"rock2",  frameW:64,  frameH:64,  frameCount:1,  frameDurationMs:ANIM_MS, anchorX:32, anchorY:64,  animated:false },
+  rock3:  { assetKey:"rock3",  frameW:64,  frameH:64,  frameCount:1,  frameDurationMs:ANIM_MS, anchorX:32, anchorY:64,  animated:false },
+  rock4:  { assetKey:"rock4",  frameW:64,  frameH:64,  frameCount:1,  frameDurationMs:ANIM_MS, anchorX:32, anchorY:64,  animated:false },
+  waterrock1:{ assetKey:"waterrock1",frameW:64, frameH:64, frameCount:16, frameDurationMs:ANIM_MS, anchorX:32, anchorY:64, animated:true },
+  waterrock2:{ assetKey:"waterrock2",frameW:64, frameH:64, frameCount:16, frameDurationMs:ANIM_MS, anchorX:32, anchorY:64, animated:true },
+  waterrock3:{ assetKey:"waterrock3",frameW:64, frameH:64, frameCount:16, frameDurationMs:ANIM_MS, anchorX:32, anchorY:64, animated:true },
+  waterrock4:{ assetKey:"waterrock4",frameW:64, frameH:64, frameCount:16, frameDurationMs:ANIM_MS, anchorX:32, anchorY:64, animated:true },
+  sheepIdle:{ assetKey:"sheepIdle",frameW:128, frameH:128, frameCount:6,  frameDurationMs:ANIM_MS, anchorX:64, anchorY:128, animated:true },
+  sheepMove:{ assetKey:"sheepMove",frameW:128, frameH:128, frameCount:4,  frameDurationMs:ANIM_MS, anchorX:64, anchorY:128, animated:true },
+  sheepGrass:{assetKey:"sheepGrass",frameW:128,frameH:128, frameCount:12, frameDurationMs:ANIM_MS, anchorX:64, anchorY:128, animated:true },
+  tree1:  { assetKey:"tree1",  frameW:192, frameH:256, frameCount:8,  frameDurationMs:ANIM_MS, anchorX:96, anchorY:256, animated:true },
+  tree2:  { assetKey:"tree2",  frameW:192, frameH:256, frameCount:8,  frameDurationMs:ANIM_MS, anchorX:96, anchorY:256, animated:true },
+  tree3:  { assetKey:"tree3",  frameW:192, frameH:192, frameCount:8,  frameDurationMs:ANIM_MS, anchorX:96, anchorY:192, animated:true },
+  tree4:  { assetKey:"tree4",  frameW:192, frameH:192, frameCount:8,  frameDurationMs:ANIM_MS, anchorX:96, anchorY:192, animated:true },
+  stump1: { assetKey:"stump1", frameW:192, frameH:256, frameCount:1,  frameDurationMs:ANIM_MS, anchorX:96, anchorY:256, animated:false },
+  stump2: { assetKey:"stump2", frameW:192, frameH:256, frameCount:1,  frameDurationMs:ANIM_MS, anchorX:96, anchorY:256, animated:false },
+  stump3: { assetKey:"stump3", frameW:192, frameH:256, frameCount:1,  frameDurationMs:ANIM_MS, anchorX:96, anchorY:256, animated:false },
+  stump4: { assetKey:"stump4", frameW:192, frameH:256, frameCount:1,  frameDurationMs:ANIM_MS, anchorX:96, anchorY:256, animated:false },
+};
+
+const PROP_SEED = 0xDEC0FCAE;
+const PROP_TOGGLE_IDS = new Set(["togTrees", "togBushes", "togRocks", "togWaterRocks", "togSheep"]);
+let PROPS = [];
+let blockedCells = new Set();
+let layerEnabled = { trees:true, bushes:true, rocks:true, waterrocks:true, sheep:true };
+
+const BLOCKED_CATS = new Set(["trees", "bushes", "rocks"]);
+
+function readLayerEnabled() {
+  layerEnabled.trees = document.getElementById("togTrees").checked;
+  layerEnabled.bushes = document.getElementById("togBushes").checked;
+  layerEnabled.rocks = document.getElementById("togRocks").checked;
+  layerEnabled.waterrocks = document.getElementById("togWaterRocks").checked;
+  layerEnabled.sheep = document.getElementById("togSheep").checked;
+}
+
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function openWater(g, x, y) {
+  if (get(g, x, y) >= 0) return false;
+  for (let dy = -1; dy <= 1; dy++)
+    for (let dx = -1; dx <= 1; dx++) {
+      if (!dx && !dy) continue;
+      if (get(g, x + dx, y + dy) >= 0) return false;
+    }
+  return true;
+}
+
+function isInteriorGrass(x, y) {
+  const rec = cellRecord[y][x];
+  return rec && rec.layer === "ground" && rec.semanticId === 5;
+}
+
+function pickVariant(rng, ids) {
+  return ids[Math.floor(rng() * ids.length)];
+}
+
+function buildProps(g) {
+  const rng = mulberry32(PROP_SEED);
+  const list = [];
+  const blocked = new Set();
+  const bushIds = ["bush1", "bush2", "bush3", "bush4"];
+  const rockIds = ["rock1", "rock2", "rock3", "rock4"];
+  const treeIds = ["tree1", "tree2", "tree3", "tree4"];
+  const stumpIds = ["stump1", "stump2", "stump3", "stump4"];
+  const waterIds = ["waterrock1", "waterrock2", "waterrock3", "waterrock4"];
+
+  for (let y = 1; y < H - 1; y++)
+    for (let x = 1; x < W - 1; x++) {
+      if (isInteriorGrass(x, y)) {
+        if (g[y][x] < 1) continue;
+        const r = rng();
+        let defId = null, cat = null;
+        if (r < 0.05) {
+          cat = "trees";
+          const ti = Math.floor(rng() * 4);
+          defId = rng() < 0.15 ? stumpIds[ti] : treeIds[ti];
+        } else if (r < 0.10) {
+          cat = "bushes";
+          defId = pickVariant(rng, bushIds);
+        } else if (r < 0.13) {
+          cat = "rocks";
+          defId = pickVariant(rng, rockIds);
+        } else if (r < 0.15) {
+          // Sheep are roaming agents: a state machine cycles them between
+          // walking (move anim, actually moving) and resting (idle/grass).
+          const startMove = rng() < 0.5;
+          const state = startMove ? "move" : (rng() < 0.5 ? "grass" : "idle");
+          const def = PROP_DEFS[state === "move" ? "sheepMove" : state === "grass" ? "sheepGrass" : "sheepIdle"];
+          list.push({
+            x, y, cat: "sheep", def, state,
+            fx: x, fy: y, homeX: x, homeY: y,
+            facing: rng() < 0.5 ? 1 : -1,
+            heading: rng() * Math.PI * 2,
+            stateUntil: animClock + 800 + rng() * 4000,
+            phaseMs: rng() * def.frameCount * def.frameDurationMs,
+          });
+          continue;
+        }
+        if (defId) {
+          const def = PROP_DEFS[defId];
+          list.push({ x, y, cat, def, phaseMs: rng() * def.frameCount * def.frameDurationMs });
+          if (BLOCKED_CATS.has(cat)) blocked.add(`${x},${y}`);
+        }
+      } else if (openWater(g, x, y) && rng() < 0.003) {
+        const defId = pickVariant(rng, waterIds);
+        const def = PROP_DEFS[defId];
+        list.push({ x, y, cat: "waterrocks", def, phaseMs: rng() * def.frameCount * def.frameDurationMs });
+      }
+    }
+
+  list.sort((a, b) => a.y - b.y || a.x - b.x);
+  PROPS = list;
+  blockedCells = blocked;
+}
+
+function sizePropsCanvas(zoom) {
+  const propsCanvas = document.getElementById("props");
+  propsCanvas.width = W * TILE;
+  propsCanvas.height = H * TILE;
+  propsCanvas.style.width = (W * zoom) + "px";
+  propsCanvas.style.height = (H * zoom) + "px";
+  const ctx = propsCanvas.getContext("2d");
+  ctx.imageSmoothingEnabled = false;
+}
+
+// Roaming sheep ------------------------------------------------------------
+const SHEEP_SPEED = 0.9;       // tiles per second while walking
+const SHEEP_WANDER_RADIUS = 7; // max tiles a sheep strays from its spawn
+
+function isRampCell(x, y) {
+  if (!inB(x, y)) return false;
+  const rec = cellRecord[y][x];
+  return !!(rec && rec.layer && rec.layer.startsWith("ramp"));
+}
+
+function sheepSpriteClear(g, fx, fy) {
+  const tx = Math.floor(fx), ty = Math.floor(fy);
+  if (!inB(tx, ty)) return false;
+  if (isRampCell(tx, ty)) return true; // ramps intentionally bridge tiers
+  const baseElev = g[ty][tx];
+  const destX = fx * TILE - TILE / 2;
+  const destY = fy * TILE - TILE;
+  const cx0 = Math.max(0, Math.floor(destX / TILE));
+  const cy0 = Math.max(0, Math.floor(destY / TILE));
+  const cx1 = Math.min(W - 1, Math.floor((destX + 128 - 1) / TILE));
+  const cy1 = Math.min(H - 1, Math.floor((destY + 128 - 1) / TILE));
+  for (let cy = cy0; cy <= cy1; cy++)
+    for (let cx = cx0; cx <= cx1; cx++)
+      if (g[cy][cx] >= 1 && g[cy][cx] !== baseElev) return false;
+  return true;
+}
+
+function sheepWalkable(g, fx, fy, skipSheep) {
+  const tx = Math.floor(fx), ty = Math.floor(fy);
+  if (!inB(tx, ty) || g[ty][tx] < 1) return false;
+  if (blockedCells.has(`${tx},${ty}`)) return false;
+  const rec = cellRecord[ty][tx];
+  if (rec && rec.layer === "cliff") return false;
+  if (!sheepSpriteClear(g, fx, fy)) return false;
+  if (skipSheep) {
+    for (const o of PROPS) {
+      if (o.cat !== "sheep" || o === skipSheep) continue;
+      const ox = o.fx !== undefined ? o.fx : o.x;
+      const oy = o.fy !== undefined ? o.fy : o.y;
+      if (Math.floor(ox) === tx && Math.floor(oy) === ty) return false;
+    }
+  }
+  return true;
+}
+
+function setSheepState(p, state) {
+  p.state = state;
+  p.def = PROP_DEFS[state === "move" ? "sheepMove" : state === "grass" ? "sheepGrass" : "sheepIdle"];
+  p.phaseMs = Math.random() * p.def.frameCount * p.def.frameDurationMs;
+}
+
+function advanceSheepState(p) {
+  if (p.state === "move") {
+    setSheepState(p, Math.random() < 0.5 ? "grass" : "idle");
+    p.stateUntil = animClock + 2000 + Math.random() * 4000;
+  } else {
+    setSheepState(p, "move");
+    p.heading = Math.random() * Math.PI * 2;
+    p.stateUntil = animClock + 1500 + Math.random() * 3500;
+  }
+}
+
+function updateSheep(dtMs) {
+  const stepSec = dtMs / 1000;
+  for (const p of PROPS) {
+    if (p.cat !== "sheep") continue;
+    if (animClock >= p.stateUntil) advanceSheepState(p);
+    if (p.state !== "move") continue;
+    const dx = Math.cos(p.heading), dy = Math.sin(p.heading);
+    const nx = p.fx + dx * SHEEP_SPEED * stepSec;
+    const ny = p.fy + dy * SHEEP_SPEED * stepSec;
+    const distHome = Math.hypot(nx - p.homeX, ny - p.homeY);
+    const ctx0 = Math.floor(p.fx), cty0 = Math.floor(p.fy);
+    const ntx = Math.floor(nx), nty = Math.floor(ny);
+    const sameElev = inB(ntx, nty) && WORLD[nty][ntx] === WORLD[cty0][ctx0];
+    const rampTarget = isRampCell(ntx, nty);
+    const rampCurrent = isRampCell(ctx0, cty0);
+    const elevDelta = inB(ntx, nty) ? Math.abs(WORLD[nty][ntx] - WORLD[cty0][ctx0]) : Infinity;
+    const viaRamp = rampTarget && rampCurrent && elevDelta === 1;
+    const elevOk = sameElev || viaRamp;
+    if (elevOk && sheepWalkable(WORLD, nx, ny, p) && distHome < SHEEP_WANDER_RADIUS) {
+      p.fx = nx; p.fy = ny;
+      if (Math.abs(dx) > 0.01) p.facing = dx > 0 ? 1 : -1;
+    } else {
+      // Blocked by water/edge or strayed too far: steer back toward home.
+      p.heading = Math.atan2(p.homeY - p.fy, p.homeX - p.fx) + (Math.random() * 2 - 1) * 0.8;
+    }
+  }
+}
+
+function propBaseX(p) { return p.fx !== undefined ? p.fx : p.x; }
+function propBaseY(p) { return p.fy !== undefined ? p.fy : p.y; }
+
+function propDestRect(p) {
+  const d = p.def;
+  const px = propBaseX(p), py = propBaseY(p);
+  return {
+    destX: px * TILE + TILE / 2 - d.anchorX,
+    destY: py * TILE + TILE - d.anchorY,
+    w: d.frameW,
+    h: d.frameH,
+    tx: Math.floor(px),
+    ty: Math.floor(py),
+  };
+}
+
+function drawProp(ctx, A, p, now) {
+  const d = p.def;
+  const img = A[d.assetKey];
+  if (!img) return;
+  let frame = 0;
+  if (d.animated) frame = Math.floor((now + p.phaseMs) / d.frameDurationMs) % d.frameCount;
+  const px = p.fx !== undefined ? p.fx : p.x;
+  const py = p.fy !== undefined ? p.fy : p.y;
+  const destX = px * TILE + TILE / 2 - d.anchorX;
+  const destY = py * TILE + TILE - d.anchorY;
+  if (p.facing === -1) {
+    const cx = px * TILE + TILE / 2;
+    ctx.save();
+    ctx.translate(cx, 0);
+    ctx.scale(-1, 1);
+    ctx.translate(-cx, 0);
+    ctx.drawImage(img, frame * d.frameW, 0, d.frameW, d.frameH, destX, destY, d.frameW, d.frameH);
+    ctx.restore();
+  } else {
+    ctx.drawImage(img, frame * d.frameW, 0, d.frameW, d.frameH, destX, destY, d.frameW, d.frameH);
+  }
+}
+
+function renderPropsFrame(now) {
+  if (!WORLD || !ASSETS) return;
+  const canvas = document.getElementById("props");
+  const ctx = canvas.getContext("2d");
+  const stage = document.getElementById("stageWrap");
+  const zoom = Math.max(1, Math.min(64, parseInt(document.getElementById("zoom").value) || 6));
+  const pad = 4;
+  const vx0 = Math.max(0, Math.floor(stage.scrollLeft / zoom) - pad);
+  const vy0 = Math.max(0, Math.floor(stage.scrollTop / zoom) - pad);
+  const vx1 = Math.min(W - 1, Math.ceil((stage.scrollLeft + stage.clientWidth) / zoom) + pad);
+  const vy1 = Math.min(H - 1, Math.ceil((stage.scrollTop + stage.clientHeight) / zoom) + pad);
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const visible = [];
+  for (const p of PROPS) {
+    if (!layerEnabled[p.cat]) continue;
+    const px = propBaseX(p), py = propBaseY(p);
+    if (px < vx0 || px > vx1 || py < vy0 || py > vy1) continue;
+    visible.push(p);
+  }
+  visible.sort((a, b) => propBaseY(a) - propBaseY(b) || propBaseX(a) - propBaseX(b));
+  for (const p of visible) {
+    drawProp(ctx, ASSETS, p, now);
+  }
+}
+
+let propsAnimLast = 0;
+const PROPS_FRAME_MS = 1000 / 15;
+
+// Internal animation clock that only advances while playing, so pausing
+// freezes every prop and resuming continues without skipping frames.
+let animClock = 0;
+let lastRafTime = null;
+let animPaused = false;
+
+function propsAnimLoop(now) {
+  if (lastRafTime === null) lastRafTime = now;
+  const delta = Math.min(100, now - lastRafTime); // clamp tab-switch jumps
+  lastRafTime = now;
+  if (!animPaused) {
+    animClock += delta;
+    updateSheep(delta);
+  }
+
+  if (now - propsAnimLast >= PROPS_FRAME_MS) {
+    propsAnimLast = now;
+    renderPropsFrame(animClock);
+  }
+  requestAnimationFrame(propsAnimLoop);
+}
 
 // ---------------------------------------------------------------------------
 // Geometry helpers
@@ -830,6 +1173,9 @@ async function run() {
   const drawShadow = document.getElementById("togShadow").checked;
   const mapCanvas = document.getElementById("map");
   renderMap(mapCanvas, WORLD, zoom, A, drawShadow);
+  buildProps(WORLD);
+  sizePropsCanvas(zoom);
+  renderPropsFrame(animClock);
 
   lastViol = checkViolations(WORLD, ADJ_ALLOWED);
   updateViolationPanel(lastViol);
@@ -845,14 +1191,19 @@ async function run() {
   hit.style.height = mapCanvas.style.height;
 
   document.getElementById("meta").textContent =
-    `${W}x${H} | ${SCENARIOS.length} scenarios | ${RAMPS.length} ramps | zoom ${zoom}px/tile`;
+    `${W}x${H} | ${SCENARIOS.length} scenarios | ${RAMPS.length} ramps | ${PROPS.length} props | zoom ${zoom}px/tile`;
 }
 
 function refreshOverlays() {
   if (!WORLD) return;
   const zoom = Math.max(1, Math.min(64, parseInt(document.getElementById("zoom").value) || 6));
   const drawShadow = document.getElementById("togShadow").checked;
-  if (ASSETS) renderMap(document.getElementById("map"), WORLD, zoom, ASSETS, drawShadow);
+  if (ASSETS) {
+    renderMap(document.getElementById("map"), WORLD, zoom, ASSETS, drawShadow);
+    buildProps(WORLD);
+    sizePropsCanvas(zoom);
+    renderPropsFrame(animClock);
+  }
   lastViol = checkViolations(WORLD, ADJ_ALLOWED || {});
   updateViolationPanel(lastViol);
   const overlay = document.getElementById("overlay");
@@ -863,6 +1214,12 @@ function refreshOverlays() {
 }
 
 document.getElementById("reload").onclick = run;
+document.getElementById("pause").onclick = () => {
+  animPaused = !animPaused;
+  const btn = document.getElementById("pause");
+  btn.textContent = animPaused ? "Play" : "Pause";
+  btn.classList.toggle("primary", animPaused);
+};
 document.getElementById("oneToOne").onclick = () => {
   document.getElementById("zoom").value = TILE; // 64 px/tile = native 1:1
   if (WORLD && ASSETS) refreshOverlays();
@@ -873,6 +1230,10 @@ document.getElementById("zoom").addEventListener("change", () => {
 });
 document.querySelectorAll(".toggles input").forEach(el => {
   el.addEventListener("change", () => {
+    if (PROP_TOGGLE_IDS.has(el.id)) {
+      readLayerEnabled();
+      return;
+    }
     if (el.id === "togShadow" && WORLD && ASSETS) refreshOverlays();
     else if (WORLD) {
       const zoom = parseInt(document.getElementById("zoom").value) || 6;
@@ -880,6 +1241,7 @@ document.querySelectorAll(".toggles input").forEach(el => {
     }
   });
 });
+readLayerEnabled();
 
 const hitLayer = document.getElementById("hitLayer");
 const stageWrap = document.getElementById("stageWrap");
@@ -912,6 +1274,9 @@ function applyZoom(zoom) {
   const map = document.getElementById("map");
   map.style.width = (W * zoom) + "px";
   map.style.height = (H * zoom) + "px";
+  const props = document.getElementById("props");
+  props.style.width = map.style.width;
+  props.style.height = map.style.height;
   const overlay = document.getElementById("overlay");
   overlay.style.width = map.style.width;
   overlay.style.height = map.style.height;
@@ -920,7 +1285,7 @@ function applyZoom(zoom) {
   hit.style.height = map.style.height;
   if (lastViol) renderOverlay(overlay, WORLD, zoom, lastViol.list, lastViol.flaggedAdj, lastViol.flaggedStep);
   document.getElementById("meta").textContent =
-    `${W}x${H} | ${SCENARIOS.length} scenarios | ${RAMPS.length} ramps | zoom ${zoom}px/tile`;
+    `${W}x${H} | ${SCENARIOS.length} scenarios | ${RAMPS.length} ramps | ${PROPS.length} props | zoom ${zoom}px/tile`;
 }
 
 // Wheel-to-zoom, anchored on the cursor (overflow hidden, so drive scroll).
@@ -986,6 +1351,7 @@ hitLayer.addEventListener("mouseleave", () => {
 });
 
 run();
+requestAnimationFrame(propsAnimLoop);
 </script>
 </body>
 </html>
